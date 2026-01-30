@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Finance Manager - Login</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="logo-container auth-logo">
+                <img src="/static/images/logo.png" alt="AI Finance Manager Logo" class="logo">
+                <span class="brand-name">Wealth.</span>
+            </div>
+
+            <h2 class="auth-title">Welcome Back</h2>
+            <p class="auth-subtitle">Enter your credentials to access your account</p>
+
+            <form action="/dashboard" method="GET">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="name@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Sign In</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="/signup">Sign up</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

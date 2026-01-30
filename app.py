@@ -16,12 +16,24 @@ def save_data(data):
         json.dump(data, f, indent=2)
 
 @app.route('/')
+def login_page():
+    return render_template('login.html')
+
+@app.route('/dashboard')
 def index():
     return render_template('index.html')
 
 @app.route('/transactions')
 def transactions():
     return render_template('transactions.html')
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
 
 @app.route('/api/data', methods=['GET'])
 def get_data():

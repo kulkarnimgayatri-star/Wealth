@@ -697,3 +697,118 @@ body {
 .btn-delete:hover {
     background-color: #b71c1c;
 }
+
+/* =========================================
+   Improved Auth Pages (Login & Signup)
+   ========================================= */
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Subtle premium gradient */
+}
+
+.auth-card {
+    background-color: var(--white);
+    border: none; /* Clean look */
+    border-radius: 16px;
+    padding: 3rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1); /* Deep, soft shadow */
+    transition: transform 0.3s ease;
+    animation: slideIn 0.5s ease-out;
+}
+
+.auth-card:hover {
+    transform: translateY(-5px); /* Subtle lift on hover */
+}
+
+.auth-logo {
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 2rem;
+}
+
+.auth-logo .logo {
+    width: 48px;
+    height: 48px;
+}
+
+.auth-logo .brand-name {
+    font-size: 1.6rem;
+    color: var(--primary-color);
+}
+
+.auth-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: var(--text-gray);
+    margin-bottom: 2.5rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Enhanced Inputs */
+.auth-card .form-group input {
+    background-color: #f8f9fa;
+    border: 1px solid #e1e1e1;
+    transition: all 0.3s ease;
+    padding: 12px 16px;
+    font-size: 1rem;
+}
+
+.auth-card .form-group input:focus {
+    background-color: #fff;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.15); /* Nice focus ring */
+}
+
+/* Enhanced Button */
+.auth-card .btn-submit {
+    background: linear-gradient(to right, var(--primary-color), #8e44ad); 
+    /* Gradient from primary to a darker purple */
+    border: none;
+    padding: 14px;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 10px 20px -5px rgba(108, 92, 231, 0.4);
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.auth-card .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 24px -6px rgba(108, 92, 231, 0.5);
+    background: linear-gradient(to right, #5649c0, #9b59b6);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: var(--text-gray);
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.2s;
+}
+
+.auth-footer a:hover {
+    color: #4834d4;
+    text-decoration: underline;
+}
