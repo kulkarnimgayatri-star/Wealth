@@ -1,0 +1,129 @@
+{
+  "accounts": [
+    {
+      "id": "personal",
+      "name": "Personal",
+      "type": "Savings Account",
+      "balance": 160724.4,
+      "active": false,
+      "budget_limit": 100000.0
+    },
+    {
+      "id": "work",
+      "name": "Work",
+      "type": "Current Account",
+      "balance": 785941.0,
+      "active": false,
+      "budget_limit": 50000.0
+    },
+    {
+      "id": "trading_account_4",
+      "name": "Trading Account",
+      "type": "Investment",
+      "balance": 1190000.0,
+      "active": true,
+      "budget_limit": 50000.0
+    }
+  ],
+  "transactions": [
+    {
+      "title": "Amazon Stocks",
+      "category": "Investment",
+      "amount": 10000,
+      "type": "expense",
+      "date": "2026-01-30T06:15:14.197Z",
+      "account_id": "trading_account_4",
+      "id": 11
+    },
+    {
+      "title": "Debited To Personal Account",
+      "category": "Other",
+      "amount": 20000,
+      "type": "expense",
+      "date": "2026-01-23T18:51:04.432Z",
+      "account_id": "work",
+      "id": 10
+    },
+    {
+      "title": "Credit",
+      "category": "Other",
+      "amount": 20000,
+      "type": "income",
+      "date": "2026-01-23T18:49:31.802Z",
+      "account_id": "personal",
+      "id": 9
+    },
+    {
+      "title": "Received Salary",
+      "category": "Salary",
+      "amount": 800000,
+      "type": "income",
+      "date": "2026-01-19T16:21:48.985Z",
+      "account_id": "work",
+      "id": 8
+    },
+    {
+      "title": "Car Maintenance",
+      "category": "Other",
+      "amount": 10000,
+      "type": "expense",
+      "date": "2026-01-19T16:20:40.475Z",
+      "account_id": "personal",
+      "id": 7
+    },
+    {
+      "title": "Dinner",
+      "category": "Food",
+      "amount": 1400,
+      "type": "expense",
+      "date": "2026-01-19T16:19:10.672Z",
+      "account_id": "personal",
+      "id": 6
+    },
+    {
+      "id": 1,
+      "title": "Flat Rent (Recurring)",
+      "date": "2024-12-12",
+      "amount": 1500.0,
+      "type": "expense",
+      "category": "rental",
+      "account_id": "personal"
+    },
+    {
+      "id": 2,
+      "title": "Netflix (Recurring)",
+      "date": "2024-12-08",
+      "amount": 10.0,
+      "type": "expense",
+      "category": "entertainment",
+      "account_id": "personal"
+    },
+    {
+      "id": 3,
+      "title": "Received salary",
+      "date": "2024-12-05",
+      "amount": 5549.52,
+      "type": "income",
+      "category": "salary",
+      "account_id": "work"
+    },
+    {
+      "id": 4,
+      "title": "Paid for shopping",
+      "date": "2024-12-05",
+      "amount": 157.21,
+      "type": "expense",
+      "category": "shopping",
+      "account_id": "personal"
+    },
+    {
+      "id": 5,
+      "title": "Paid for shopping",
+      "date": "2024-12-04",
+      "amount": 418.58,
+      "type": "expense",
+      "category": "shopping",
+      "account_id": "personal"
+    }
+  ]
+}

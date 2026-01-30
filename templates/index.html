@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Finance Manager - Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="/static/images/logo.png" alt="AI Finance Manager Logo" class="logo">
+                <span class="brand-name">Wealth.</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active">
+                    <i class="fa-solid fa-shapes"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/transactions" class="nav-item">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Budgets</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-bar">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="top-bar-actions">
+                    <button class="btn-secondary"><i class="fa-solid fa-table-columns"></i> Dashboard</button>
+                    <button class="btn-primary" id="add-trans-btn"><i class="fa-solid fa-plus"></i> Add
+                        Transaction</button>
+                    <div class="user-profile">
+                        <img src="/static/images/avatar.png" alt="User Avatar" class="avatar">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+
+                <!-- Monthly Budget -->
+                <div class="card budget-card">
+                    <div class="card-header">
+                        <h3>Monthly Budget (Default Account)</h3>
+                        <div class="edit-icon" id="edit-budget-btn"><i class="fa-solid fa-pencil"></i></div>
+                    </div>
+                    <div class="budget-info">
+                        <span class="amount-spent" id="budget-spent">₹0.00</span>
+                        <span class="amount-total" id="budget-total">of ₹0.00 spent</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="budget-progress" style="width: 0%;"></div>
+                    </div>
+                    <div class="budget-footer-text" id="budget-percent">0% used</div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="card transactions-card">
+                    <div class="card-header">
+                        <h3>Recent Transactions</h3>
+                        <div class="dropdown">
+                            <button class="dropdown-btn">All <i class="fa-solid fa-chevron-down"></i></button>
+                        </div>
+                    </div>
+                    <div class="transactions-list" id="transactions-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Expense Breakdown -->
+                <div class="card expense-card">
+                    <div class="card-header">
+                        <h3>Monthly Expense Breakdown</h3>
+                    </div>
+                    <div class="chart-container">
+                        <!-- Simple CSS Pie Chart -->
+                        <div class="pie-chart">
+                            <div class="donut-hole"></div>
+                        </div>
+                        <!-- Dynamic Labels removed for simplicity, using Legend instead -->
+                    </div>
+                    <div class="chart-legend">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Accounts Section - Placed inside Grid, spanning full width -->
+                <div class="accounts-section">
+                    <div class="accounts-header">My Accounts</div>
+                    <div class="accounts-grid" id="accounts-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Account Modal -->
+    <div id="add-account-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Account</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="add-account-form">
+                <div class="form-group">
+                    <label for="acc-name">Account Title</label>
+                    <input type="text" id="acc-name" name="name" placeholder="e.g. Trading Account" required>
+                </div>
+                <div class="form-group">
+                    <label for="acc-balance">Opening Balance (₹)</label>
+                    <input type="number" id="acc-balance" name="balance" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label for="acc-type">Account Type</label>
+                    <select id="acc-type" name="type" required>
+                        <option value="Savings Account">Savings Account</option>
+                        <option value="Current Account">Current Account</option>
+                        <option value="Wallet">Wallet</option>
+                        <option value="Investment">Investment</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">Add Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Budget Modal -->
+    <div id="edit-budget-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Monthly Budget</h2>
+                <span class="close-modal" id="close-budget-modal">&times;</span>
+            </div>
+            <form id="edit-budget-form">
+                <div class="form-group">
+                    <label for="new-budget-amount">New Budget Limit (₹)</label>
+                    <input type="number" id="new-budget-amount" name="new_limit" step="0.01" required>
+                </div>
+                <button type="submit" class="btn-submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <div id="add-transaction-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Transaction</h2>
+                <span class="close-modal" id="close-trans-modal">&times;</span>
+            </div>
+            <form id="add-transaction-form">
+                <div class="form-group">
+                    <label for="trans-title">Title</label>
+                    <input type="text" id="trans-title" name="title" placeholder="e.g. Lunch" required>
+                </div>
+                <!-- Date is auto-fetched, so no input needed, or read-only/hidden -->
+
+                <div class="form-group">
+                    <label for="trans-category">Category</label>
+                    <select id="trans-category" name="category" required>
+                        <option value="Food">Food</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Rental">Rental</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="trans-amount">Amount (₹)</label>
+                    <input type="number" id="trans-amount" name="amount" step="0.01" placeholder="0.00" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="trans-type">Type</label>
+                    <select id="trans-type" name="type" required>
+                        <option value="expense">Expense</option>
+                        <option value="income">Income</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit">Add Transaction</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div id="delete-account-modal" class="modal">
+        <div class="modal-content delete-modal">
+            <div class="modal-header">
+                <h2>Are You Sure?</h2>
+                <span class="close-modal" id="close-delete-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Want To Delete Your Account?</p>
+                <div class="warning-box">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Deleting An Account Would Delete All It's Related Transactions Permanantly</span>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-cancel" id="cancel-delete-btn">Cancel</button>
+                    <button class="btn-delete" id="confirm-delete-btn">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/script.js"></script>
+</body>
+
+</html>

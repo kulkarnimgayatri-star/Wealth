@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Finance Manager - Transactions</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Specific styles for Transactions Page if needed */
+        .chart-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .account-selector {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+        }
+
+        .account-selector option {
+            background: #1e1e2e;
+            /* Match theme dark color */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="/static/images/logo.png" alt="AI Finance Manager Logo" class="logo">
+                <span class="brand-name">Wealth.</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">
+                    <i class="fa-solid fa-shapes"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/transactions" class="nav-item active">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Budgets</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1 class="page-title">Transactions</h1>
+                <div class="top-bar-actions">
+                    <select id="account-select" class="account-selector">
+                        <option value="">All Accounts</option>
+                        <!-- Populated via JS -->
+                    </select>
+                    <div class="user-profile">
+                        <img src="/static/images/avatar.png" alt="User Avatar" class="avatar">
+                    </div>
+                </div>
+            </header>
+
+            <div class="chart-section">
+                <h3>Transaction Overview</h3>
+                <canvas id="transactionChart"></canvas>
+            </div>
+
+            <!-- List of transactions could go here too, reusing styles -->
+            <div class="card transactions-card" style="width: 100%;">
+                <div class="card-header">
+                    <h3>History</h3>
+                </div>
+                <div class="transactions-list" id="full-transactions-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Inline script for now to handle specific chart logic without polluting script.js too much
+        document.addEventListener('DOMContentLoaded', async () => {
+            let chartInstance = null;
+            let allData = { accounts: [], transactions: [] };
+
+            // Helper: Format Currency
+            const formatCurrency = (amount) => '₹' + parseFloat(amount).toFixed(2);
+
+            // Helper: Format Date
+            const formatDate = (dateString) => {
+                const options = { month: 'short', day: 'numeric', year: 'numeric' };
+                return new Date(dateString).toLocaleDateString('en-US', options);
+            };
+
+            // 1. Fetch Data
+            try {
+                const response = await fetch('/api/data');
+                allData = await response.json();
+
+                initPage();
+            } catch (error) {
+                console.error("Error loading data", error);
+            }
+
+            function initPage() {
+                populateAccountSelect();
+
+                // Check URL params for account_id
+                const urlParams = new URLSearchParams(window.location.search);
+                const accountId = urlParams.get('account_id');
+
+                if (accountId) {
+                    const select = document.getElementById('account-select');
+                    select.value = accountId;
+                }
+
+                renderPage();
+
+                // Listener for select change
+                document.getElementById('account-select').addEventListener('change', renderPage);
+            }
+
+            function populateAccountSelect() {
+                const select = document.getElementById('account-select');
+                allData.accounts.forEach(acc => {
+                    const option = document.createElement('option');
+                    option.value = acc.id;
+                    option.textContent = acc.name;
+                    select.appendChild(option);
+                });
+            }
+
+            function renderPage() {
+                const selectedAccountId = document.getElementById('account-select').value;
+
+                // Filter Transactions
+                let filteredTransactions = allData.transactions;
+                if (selectedAccountId) {
+                    filteredTransactions = filteredTransactions.filter(t => t.account_id === selectedAccountId);
+                }
+
+                // Render List
+                renderTransactionList(filteredTransactions);
+
+                // Render Chart
+                renderChart(filteredTransactions);
+            }
+
+            function renderTransactionList(transactions) {
+                const listEl = document.getElementById('full-transactions-list');
+                listEl.innerHTML = '';
+
+                transactions.forEach(t => {
+                    const isExpense = t.type === 'expense';
+                    const amountClass = isExpense ? 'expense' : 'income';
+                    const arrow = isExpense ? '↘' : '↗';
+
+                    const html = `
+                        <div class="transaction-item">
+                            <div class="transaction-details">
+                                <span class="trans-title">${t.title}</span>
+                                <span class="trans-date">${formatDate(t.date)}</span>
+                            </div>
+                            <span class="trans-amount ${amountClass}">${arrow} ${formatCurrency(t.amount)}</span>
+                        </div>
+                    `;
+                    listEl.innerHTML += html;
+                });
+            }
+
+            function renderChart(transactions) {
+                const ctx = document.getElementById('transactionChart').getContext('2d');
+
+                // Destroy previous chart if exists
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                // Process Data: Group by Date
+                // We want a timeline. 
+                // X Axis: Dates (Last 30 days or range of transactions)
+                // Y Axis: Amount
+
+                // Sort transactions by date
+                transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                // Group by date
+                const dateMap = {};
+                transactions.forEach(t => {
+                    const dateKey = new Date(t.date).toLocaleDateString(); // Simple key
+                    if (!dateMap[dateKey]) {
+                        dateMap[dateKey] = { income: 0, expense: 0 };
+                    }
+                    if (t.type === 'income') {
+                        dateMap[dateKey].income += t.amount;
+                    } else {
+                        dateMap[dateKey].expense += t.amount;
+                    }
+                });
+
+                const labels = Object.keys(dateMap);
+                const incomeData = labels.map(d => dateMap[d].income);
+                const expenseData = labels.map(d => dateMap[d].expense);
+
+                chartInstance = new Chart(ctx, {
+                    type: 'bar', // Using Bar chart as per user image style (grouped bars)
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Income',
+                                data: incomeData,
+                                backgroundColor: '#2ecc71',
+                                borderRadius: 4,
+                                barPercentage: 0.6
+                            },
+                            {
+                                label: 'Expense',
+                                data: expenseData,
+                                backgroundColor: '#ff4d4d',
+                                borderRadius: 4,
+                                barPercentage: 0.6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#ccc'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#ccc'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'white'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
