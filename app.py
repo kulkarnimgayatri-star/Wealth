@@ -16,6 +16,10 @@ def save_data(data):
         json.dump(data, f, indent=2)
 
 @app.route('/')
+def landing_page():
+    return render_template('landing.html')
+
+@app.route('/login')
 def login_page():
     return render_template('login.html')
 
