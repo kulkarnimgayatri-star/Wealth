@@ -4,15 +4,15 @@
       "id": "personal",
       "name": "Personal",
       "type": "Savings Account",
-      "balance": 160724.4,
-      "active": false,
-      "budget_limit": 100000.0
+      "balance": 155724.4,
+      "active": true,
+      "budget_limit": 200000.0
     },
     {
       "id": "work",
       "name": "Work",
       "type": "Current Account",
-      "balance": 785941.0,
+      "balance": 785441.0,
       "active": false,
       "budget_limit": 50000.0
     },
@@ -21,11 +21,29 @@
       "name": "Trading Account",
       "type": "Investment",
       "balance": 1190000.0,
-      "active": true,
+      "active": false,
       "budget_limit": 50000.0
     }
   ],
   "transactions": [
+    {
+      "title": "get together",
+      "category": "Travel",
+      "amount": 5000,
+      "type": "expense",
+      "date": "2026-02-26T05:56:28.425Z",
+      "account_id": "personal",
+      "id": 13
+    },
+    {
+      "title": "friends",
+      "category": "Entertainment",
+      "amount": 500,
+      "type": "expense",
+      "date": "2026-02-25T14:13:57.550Z",
+      "account_id": "work",
+      "id": 12
+    },
     {
       "title": "Amazon Stocks",
       "category": "Investment",

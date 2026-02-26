@@ -23,6 +23,10 @@ def landing_page():
 def login_page():
     return render_template('login.html')
 
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
 @app.route('/dashboard')
 def index():
     return render_template('index.html')
@@ -31,13 +35,9 @@ def index():
 def transactions():
     return render_template('transactions.html')
 
-@app.route('/login')
-def login():
-    return render_template('login.html')
-
-@app.route('/signup')
-def signup():
-    return render_template('signup.html')
+@app.route('/analytics')
+def analytics():
+    return render_template('analytics.html')
 
 @app.route('/api/data', methods=['GET'])
 def get_data():
@@ -107,21 +107,17 @@ def add_account():
     # Generate ID
     new_id = new_account['name'].lower().replace(' ', '_') + '_' + str(len(data['accounts']) + 1)
     
-    # Check duplicate ID? (Simple override for now to prevent crash)
-    
     account_obj = {
         "id": new_id,
         "name": new_account['name'],
         "type": new_account['type'],
         "balance": float(new_account['balance']),
-        "balance": float(new_account['balance']),
-        "active": False, # Default to inactive
+        "active": False,
         "budget_limit": 10000.0
     }
     
     data['accounts'].append(account_obj)
     save_data(data)
-    
 
     return jsonify({"status": "success", "account": account_obj})
 

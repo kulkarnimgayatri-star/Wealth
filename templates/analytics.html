@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wealth. — Analytics</title>
+    <meta name="description"
+        content="Comprehensive financial analytics — spending trends, category breakdowns, income vs expenses for smart money decisions.">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ── Analytics Page Styles ── */
+        :root {
+            --income-grad: linear-gradient(135deg, #00b894, #00cec9);
+            --expense-grad: linear-gradient(135deg, #d63031, #e17055);
+            --savings-grad: linear-gradient(135deg, #6c5ce7, #a29bfe);
+        }
+
+        body {
+            background: #f6f8fc;
+        }
+
+        .main-content {
+            background: #f6f8fc;
+            padding: 2rem 2.5rem;
+        }
+
+        /* ── KPI Strip ── */
+        .kpi-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.4rem 1.6rem;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.09);
+        }
+
+        .kpi-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .kpi-icon.income {
+            background: rgba(0, 184, 148, 0.12);
+            color: #00b894;
+        }
+
+        .kpi-icon.expense {
+            background: rgba(214, 48, 49, 0.12);
+            color: #d63031;
+        }
+
+        .kpi-icon.savings {
+            background: rgba(108, 92, 231, 0.12);
+            color: #6c5ce7;
+        }
+
+        .kpi-icon.txn {
+            background: rgba(0, 184, 255, 0.12);
+            color: #0984e3;
+        }
+
+        .kpi-label {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: #636e72;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e1e2e;
+            letter-spacing: -0.03em;
+        }
+
+        .kpi-sub {
+            font-size: 0.75rem;
+            color: #b2bec3;
+            margin-top: 2px;
+        }
+
+        .kpi-badge {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .kpi-badge.pos {
+            background: rgba(0, 184, 148, 0.12);
+            color: #00b894;
+        }
+
+        .kpi-badge.neg {
+            background: rgba(214, 48, 49, 0.12);
+            color: #d63031;
+        }
+
+        /* ── Chart Grid ── */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 18px;
+            padding: 1.6rem;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            transition: box-shadow 0.25s;
+        }
+
+        .chart-card:hover {
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+        }
+
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.2rem;
+        }
+
+        .chart-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e1e2e;
+        }
+
+        .chart-card-sub {
+            font-size: 0.78rem;
+            color: #b2bec3;
+            margin-top: 2px;
+        }
+
+        .chart-pill {
+            background: #f1f2f6;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #636e72;
+        }
+
+        .canvas-wrap {
+            position: relative;
+            width: 100%;
+        }
+
+        .canvas-wrap canvas {
+            width: 100% !important;
+        }
+
+        /* ── Category breakdown table inside chart ── */
+        .category-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .category-table th {
+            color: #b2bec3;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+            padding: 6px 8px;
+            text-align: left;
+        }
+
+        .category-table td {
+            padding: 8px;
+            border-top: 1px solid #f1f2f6;
+            color: #2d3436;
+            font-weight: 500;
+        }
+
+        .cat-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            margin-right: 7px;
+            vertical-align: middle;
+        }
+
+        .cat-bar-bg {
+            background: #f1f2f6;
+            border-radius: 4px;
+            height: 6px;
+            margin-top: 3px;
+            overflow: hidden;
+        }
+
+        .cat-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+
+        /* ── Account Insight Cards ── */
+        .account-insights {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .acc-insight-card {
+            border: 1px solid #f1f2f6;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .acc-insight-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 4px;
+        }
+
+        .acc-insight-val {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #6c5ce7;
+        }
+
+        .acc-insight-type {
+            font-size: 0.72rem;
+            color: #b2bec3;
+        }
+
+        /* ── Savings Rate Meter ── */
+        .savings-meter-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 0;
+        }
+
+        .meter-label {
+            font-size: 0.8rem;
+            color: #b2bec3;
+            margin-top: 0.75rem;
+            font-weight: 500;
+        }
+
+        .meter-value-large {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #1e1e2e;
+            letter-spacing: -0.04em;
+            margin-top: 4px;
+        }
+
+        /* ── Top Transactions list ── */
+        .top-tx-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .top-tx-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0.8rem;
+            border-radius: 10px;
+            background: #f8f9fb;
+        }
+
+        .top-tx-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .top-tx-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .top-tx-title {
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: #2d3436;
+        }
+
+        .top-tx-cat {
+            font-size: 0.75rem;
+            color: #b2bec3;
+        }
+
+        .top-tx-amount {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* ── Filter Bar ── */
+        .filter-bar {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #636e72;
+        }
+
+        .filter-btn {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid #dfe6e9;
+            background: white;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #636e72;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #6c5ce7;
+            color: white;
+            border-color: #6c5ce7;
+        }
+
+        .filter-select {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #dfe6e9;
+            background: white;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #636e72;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+
+        /* ── Loading State ── */
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .kpi-strip {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-card.full-width {
+                grid-column: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="/static/images/logo.png" alt="Wealth Logo" class="logo">
+                <span class="brand-name">Wealth.</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="/dashboard" class="nav-item">
+                    <i class="fa-solid fa-shapes"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/transactions" class="nav-item">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="/analytics" class="nav-item active">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="/budgets" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Budgets</span>
+                </a>
+                <a href="/settings" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/login" class="nav-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Header -->
+            <header class="top-bar">
+                <h1 class="page-title">Analytics</h1>
+                <div class="top-bar-actions">
+                    <div class="user-profile">
+                        <img src="/static/images/avatar.png" alt="User Avatar" class="avatar">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <span class="filter-label">Account:</span>
+                <select id="account-filter" class="filter-select">
+                    <option value="">All Accounts</option>
+                </select>
+                <span class="filter-label">Period:</span>
+                <button class="filter-btn" data-period="all">All Time</button>
+                <button class="filter-btn active" data-period="90">Last 90 Days</button>
+                <button class="filter-btn" data-period="30">Last 30 Days</button>
+                <button class="filter-btn" data-period="7">Last 7 Days</button>
+            </div>
+
+            <!-- KPI Strip -->
+            <div class="kpi-strip">
+                <div class="kpi-card">
+                    <div class="kpi-icon income"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                    <div>
+                        <div class="kpi-label">Total Income</div>
+                        <div class="kpi-value" id="kpi-income">—</div>
+                        <div class="kpi-badge pos" id="kpi-income-badge"></div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon expense"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                    <div>
+                        <div class="kpi-label">Total Expenses</div>
+                        <div class="kpi-value" id="kpi-expense">—</div>
+                        <div class="kpi-badge neg" id="kpi-expense-badge"></div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon savings"><i class="fa-solid fa-piggy-bank"></i></div>
+                    <div>
+                        <div class="kpi-label">Net Savings</div>
+                        <div class="kpi-value" id="kpi-savings">—</div>
+                        <div class="kpi-sub" id="kpi-savings-rate"></div>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon txn"><i class="fa-solid fa-receipt"></i></div>
+                    <div>
+                        <div class="kpi-label">Transactions</div>
+                        <div class="kpi-value" id="kpi-txn-count">—</div>
+                        <div class="kpi-sub" id="kpi-avg-txn"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="analytics-grid">
+
+                <!-- 1. Income vs Expense Bar Chart (full width) -->
+                <div class="chart-card full-width">
+                    <div class="chart-card-header">
+                        <div>
+                            <div class="chart-card-title">Income vs Expenses — Monthly Overview</div>
+                            <div class="chart-card-sub">Grouped comparison by month</div>
+                        </div>
+                        <span class="chart-pill" id="income-expense-range">—</span>
+                    </div>
+                    <div class="canvas-wrap" style="height:260px;">
+                        <canvas id="incomeExpenseChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 2. Expense Category Donut -->
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div>
+                            <div class="chart-card-title">Expense Breakdown</div>
+                            <div class="chart-card-sub">By category</div>
+                        </div>
+                    </div>
+                    <div class="canvas-wrap" style="height:230px;">
+                        <canvas id="categoryDonutChart"></canvas>
+                    </div>
+                    <table class="category-table" id="category-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th style="min-width:100px">Share</th>
+                            </tr>
+                        </thead>
+                        <tbody id="category-table-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- 3. Cumulative Balance Line Chart -->
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div>
+                            <div class="chart-card-title">Cash Flow Trend</div>
+                            <div class="chart-card-sub">Running net balance over time</div>
+                        </div>
+                    </div>
+                    <div class="canvas-wrap" style="height:230px;">
+                        <canvas id="cashFlowChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 4. Savings Rate Gauge + Top Spending Categories -->
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div>
+                            <div class="chart-card-title">Savings Rate</div>
+                            <div class="chart-card-sub">Income saved as percentage</div>
+                        </div>
+                    </div>
+                    <div class="savings-meter-wrap">
+                        <div class="canvas-wrap" style="height:180px; max-width:300px;">
+                            <canvas id="savingsGaugeChart"></canvas>
+                        </div>
+                        <div class="meter-value-large" id="gauge-center-label">0%</div>
+                        <div class="meter-label">of income saved</div>
+                    </div>
+                </div>
+
+                <!-- 5. Account Distribution Polar Area (full width) -->
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div>
+                            <div class="chart-card-title">Account Distribution</div>
+                            <div class="chart-card-sub">Balance by account</div>
+                        </div>
+                    </div>
+                    <div class="canvas-wrap" style="height:240px;">
+                        <canvas id="accountPolarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 6. Top Expenses (largest single transactions) -->
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div>
+                            <div class="chart-card-title">Top Spending Entries</div>
+                            <div class="chart-card-sub">Highest individual expenses</div>
+                        </div>
+                    </div>
+                    <div class="top-tx-list" id="top-tx-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- 7. Income Sources Bar (full width) -->
+                <div class="chart-card full-width">
+                    <div class="chart-card-header">
+                        <div>
+                            <div class="chart-card-title">Income Sources</div>
+                            <div class="chart-card-sub">Total income by category</div>
+                        </div>
+                    </div>
+                    <div class="canvas-wrap" style="height:220px;">
+                        <canvas id="incomeSourceChart"></canvas>
+                    </div>
+                </div>
+
+            </div><!-- /analytics-grid -->
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+
+            /* ─── Color Palette ─── */
+            const PALETTE = [
+                '#6c5ce7', '#00b894', '#fd79a8', '#fdcb6e', '#0984e3',
+                '#e17055', '#74b9ff', '#a29bfe', '#55efc4', '#fab1a0',
+                '#00cec9', '#ff7675', '#81ecec', '#ff6b81', '#ffeaa7'
+            ];
+
+            const formatCurrency = v => '₹' + parseFloat(v).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const formatDate = ds => new Date(ds).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
+
+            /* ─── Chart default style (dark-neutral) ─── */
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#888';
+
+            const gridColor = 'rgba(0,0,0,0.05)';
+            const tooltipBg = '#ffffff';
+
+            /* ─── Fetch Data ─── */
+            let rawData = { accounts: [], transactions: [] };
+            try {
+                const res = await fetch('/api/data');
+                rawData = await res.json();
+            } catch (e) { console.error('Failed to fetch analytics data', e); }
+
+            /* ─── Period Filter ─── */
+            let activePeriod = 90;
+            let activeAccount = '';
+
+            document.querySelectorAll('.filter-btn[data-period]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn[data-period]').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    activePeriod = btn.dataset.period === 'all' ? null : parseInt(btn.dataset.period);
+                    buildAll();
+                });
+            });
+
+            /* ─── Account Filter ─── */
+            const accFilter = document.getElementById('account-filter');
+            rawData.accounts.forEach(acc => {
+                const opt = document.createElement('option');
+                opt.value = acc.id; opt.textContent = acc.name;
+                accFilter.appendChild(opt);
+            });
+            accFilter.addEventListener('change', () => { activeAccount = accFilter.value; buildAll(); });
+
+            /* ─── Filter Transactions ─── */
+            function getTransactions() {
+                const now = Date.now();
+                return rawData.transactions.filter(t => {
+                    const ts = new Date(t.date).getTime();
+                    if (activePeriod && (now - ts) > activePeriod * 86400000) return false;
+                    if (activeAccount && t.account_id !== activeAccount) return false;
+                    return true;
+                });
+            }
+
+            /* ─── Chart instances store ─── */
+            const charts = {};
+
+            function destroyChart(key) {
+                if (charts[key]) { charts[key].destroy(); delete charts[key]; }
+            }
+
+            /* ═══════════════════════════════════════════
+               BUILD ALL
+            ═══════════════════════════════════════════ */
+            function buildAll() {
+                const txns = getTransactions();
+
+                renderKPIs(txns);
+                renderIncomeExpenseChart(txns);
+                renderCategoryDonut(txns);
+                renderCashFlow(txns);
+                renderSavingsGauge(txns);
+                renderAccountPolar();
+                renderTopExpenses(txns);
+                renderIncomeSources(txns);
+            }
+
+            /* ─── KPI Strip ─── */
+            function renderKPIs(txns) {
+                const income = txns.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+                const expense = txns.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+                const savings = income - expense;
+                const rate = income > 0 ? ((savings / income) * 100).toFixed(1) : 0;
+                const avgTxn = txns.length > 0 ? (expense / txns.filter(t => t.type === 'expense').length || 0) : 0;
+
+                document.getElementById('kpi-income').textContent = formatCurrency(income);
+                document.getElementById('kpi-expense').textContent = formatCurrency(expense);
+                document.getElementById('kpi-savings').textContent = formatCurrency(savings);
+                document.getElementById('kpi-savings-rate').textContent = rate + '% savings rate';
+                document.getElementById('kpi-txn-count').textContent = txns.length;
+                document.getElementById('kpi-avg-txn').textContent = 'Avg ₹' + parseFloat(avgTxn).toLocaleString('en-IN', { maximumFractionDigits: 0 }) + ' / expense';
+
+                const incomeBadge = document.getElementById('kpi-income-badge');
+                const expenseBadge = document.getElementById('kpi-expense-badge');
+
+                incomeBadge.textContent = txns.filter(t => t.type === 'income').length + ' income entries';
+                expenseBadge.textContent = txns.filter(t => t.type === 'expense').length + ' expense entries';
+            }
+
+            /* ─── 1. Income vs Expense Grouped Bar ─── */
+            function renderIncomeExpenseChart(txns) {
+                destroyChart('incomeExpense');
+
+                // Group by month (YYYY-MM)
+                const monthly = {};
+                txns.forEach(t => {
+                    const d = new Date(t.date);
+                    const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+                    if (!monthly[key]) monthly[key] = { income: 0, expense: 0 };
+                    monthly[key][t.type] += t.amount;
+                });
+
+                const labels = Object.keys(monthly).sort();
+                const incomeData = labels.map(k => monthly[k].income);
+                const expenseData = labels.map(k => monthly[k].expense);
+
+                // Update range pill
+                if (labels.length > 0) {
+                    const first = new Date(labels[0] + '-01').toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+                    const last = new Date(labels[labels.length - 1] + '-01').toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+                    document.getElementById('income-expense-range').textContent = labels.length === 1 ? first : first + ' — ' + last;
+                }
+
+                const ctx = document.getElementById('incomeExpenseChart').getContext('2d');
+                charts['incomeExpense'] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels.map(l => {
+                            const d = new Date(l + '-01');
+                            return d.toLocaleDateString('en-IN', { month: 'short', year: '2-digit' });
+                        }),
+                        datasets: [
+                            {
+                                label: 'Income',
+                                data: incomeData,
+                                backgroundColor: 'rgba(0,184,148,0.85)',
+                                borderRadius: 6,
+                                barPercentage: 0.55,
+                            },
+                            {
+                                label: 'Expenses',
+                                data: expenseData,
+                                backgroundColor: 'rgba(214,48,49,0.8)',
+                                borderRadius: 6,
+                                barPercentage: 0.55,
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { boxWidth: 12, borderRadius: 3, useBorderRadius: true } },
+                            tooltip: {
+                                backgroundColor: '#fff',
+                                titleColor: '#2d3436',
+                                bodyColor: '#636e72',
+                                borderColor: '#f1f2f6',
+                                borderWidth: 1,
+                                padding: 12,
+                                callbacks: { label: ctx => ' ' + formatCurrency(ctx.raw) }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+                            y: {
+                                grid: { color: gridColor },
+                                ticks: { callback: v => '₹' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v), font: { size: 11 } },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            /* ─── 2. Category Donut ─── */
+            function renderCategoryDonut(txns) {
+                destroyChart('categoryDonut');
+
+                const expenses = txns.filter(t => t.type === 'expense');
+                const catMap = {};
+                let total = 0;
+                expenses.forEach(t => {
+                    const c = t.category || 'Other';
+                    catMap[c] = (catMap[c] || 0) + t.amount;
+                    total += t.amount;
+                });
+
+                const cats = Object.keys(catMap).sort((a, b) => catMap[b] - catMap[a]);
+                const values = cats.map(c => catMap[c]);
+                const colors = cats.map((_, i) => PALETTE[i % PALETTE.length]);
+
+                const ctx = document.getElementById('categoryDonutChart').getContext('2d');
+                charts['categoryDonut'] = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: cats,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: colors,
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            hoverBorderColor: '#fff',
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '68%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#fff',
+                                titleColor: '#2d3436',
+                                bodyColor: '#636e72',
+                                borderColor: '#f1f2f6',
+                                borderWidth: 1,
+                                padding: 12,
+                                callbacks: {
+                                    label: ctx => ' ' + ctx.label + ': ' + formatCurrency(ctx.raw) + ' (' + ((ctx.raw / total) * 100).toFixed(1) + '%)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Table
+                const tbody = document.getElementById('category-table-body');
+                tbody.innerHTML = '';
+                cats.forEach((cat, i) => {
+                    const pct = total > 0 ? ((catMap[cat] / total) * 100).toFixed(1) : 0;
+                    tbody.innerHTML += `
+            <tr>
+                <td><span class="cat-dot" style="background:${colors[i]}"></span>${cat}</td>
+                <td>${formatCurrency(catMap[cat])}</td>
+                <td>
+                    <div style="font-size:0.78rem;color:#636e72;margin-bottom:2px">${pct}%</div>
+                    <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${pct}%;background:${colors[i]}"></div></div>
+                </td>
+            </tr>`;
+                });
+
+                if (cats.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#b2bec3;padding:1rem">No expense data for this period</td></tr>';
+                }
+            }
+
+            /* ─── 3. Cash Flow Trend (line) ─── */
+            function renderCashFlow(txns) {
+                destroyChart('cashFlow');
+
+                const sorted = [...txns].sort((a, b) => new Date(a.date) - new Date(b.date));
+                let running = 0;
+                const points = sorted.map(t => {
+                    running += (t.type === 'income' ? t.amount : -t.amount);
+                    return { x: new Date(t.date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }), y: running };
+                });
+
+                const ctx = document.getElementById('cashFlowChart').getContext('2d');
+
+                const gradient = ctx.createLinearGradient(0, 0, 0, 230);
+                gradient.addColorStop(0, 'rgba(108,92,231,0.25)');
+                gradient.addColorStop(1, 'rgba(108,92,231,0)');
+
+                charts['cashFlow'] = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: points.map(p => p.x),
+                        datasets: [{
+                            label: 'Net Balance',
+                            data: points.map(p => p.y),
+                            borderColor: '#6c5ce7',
+                            backgroundColor: gradient,
+                            borderWidth: 2.5,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#6c5ce7',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#fff',
+                                titleColor: '#2d3436',
+                                bodyColor: '#636e72',
+                                borderColor: '#f1f2f6',
+                                borderWidth: 1,
+                                padding: 12,
+                                callbacks: { label: ctx => ' Net: ' + formatCurrency(ctx.raw) }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 8 } },
+                            y: {
+                                grid: { color: gridColor },
+                                ticks: { callback: v => '₹' + (Math.abs(v) >= 1000 ? (v / 1000).toFixed(0) + 'k' : v), font: { size: 10 } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            /* ─── 4. Savings Gauge (Doughnut half) ─── */
+            function renderSavingsGauge(txns) {
+                destroyChart('savingsGauge');
+
+                const income = txns.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+                const expense = txns.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+                const rate = income > 0 ? Math.min((((income - expense) / income) * 100), 100) : 0;
+                const rateF = Math.max(rate, 0);
+
+                document.getElementById('gauge-center-label').textContent = rateF.toFixed(1) + '%';
+
+                const ctx = document.getElementById('savingsGaugeChart').getContext('2d');
+                charts['savingsGauge'] = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [rateF, 100 - rateF],
+                            backgroundColor: [
+                                rateF >= 20 ? '#00b894' : rateF >= 5 ? '#fdcb6e' : '#d63031',
+                                '#f1f2f6'
+                            ],
+                            borderWidth: 0,
+                            circumference: 180,
+                            rotation: -90
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '75%',
+                        plugins: { legend: { display: false }, tooltip: { enabled: false } }
+                    }
+                });
+            }
+
+            /* ─── 5. Account Polar Area ─── */
+            function renderAccountPolar() {
+                destroyChart('accountPolar');
+
+                const accounts = rawData.accounts;
+                const labels = accounts.map(a => a.name);
+                const values = accounts.map(a => Math.max(a.balance, 0));
+                const colors = accounts.map((_, i) => PALETTE[i % PALETTE.length]);
+
+                const ctx = document.getElementById('accountPolarChart').getContext('2d');
+                charts['accountPolar'] = new Chart(ctx, {
+                    type: 'polarArea',
+                    data: {
+                        labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: colors.map(c => c + 'cc'),
+                            borderColor: colors,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'right', labels: { boxWidth: 12, font: { size: 12 } } },
+                            tooltip: {
+                                backgroundColor: '#fff',
+                                titleColor: '#2d3436',
+                                bodyColor: '#636e72',
+                                borderColor: '#f1f2f6',
+                                borderWidth: 1,
+                                callbacks: { label: ctx => ' ' + ctx.label + ': ' + formatCurrency(ctx.raw) }
+                            }
+                        },
+                        scales: {
+                            r: {
+                                grid: { color: gridColor },
+                                ticks: {
+                                    display: false,
+                                    backdropColor: 'transparent'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            /* ─── 6. Top Expenses ─── */
+            const CAT_ICONS = {
+                'Food': 'fa-utensils', 'Travel': 'fa-plane', 'Shopping': 'fa-bag-shopping',
+                'Entertainment': 'fa-film', 'Salary': 'fa-briefcase', 'Investment': 'fa-chart-line',
+                'Rental': 'fa-house', 'Personal': 'fa-user', 'Clothing': 'fa-shirt',
+                'Other': 'fa-ellipsis'
+            };
+
+            const CAT_COLORS = {
+                'Food': '#fdcb6e', 'Travel': '#74b9ff', 'Shopping': '#fd79a8',
+                'Entertainment': '#a29bfe', 'Salary': '#00b894', 'Investment': '#0984e3',
+                'Rental': '#e17055', 'Personal': '#55efc4', 'Clothing': '#fab1a0',
+                'Other': '#b2bec3'
+            };
+
+            function renderTopExpenses(txns) {
+                const expenses = txns.filter(t => t.type === 'expense').sort((a, b) => b.amount - a.amount).slice(0, 6);
+                const listEl = document.getElementById('top-tx-list');
+
+                if (expenses.length === 0) {
+                    listEl.innerHTML = '<div style="text-align:center;color:#b2bec3;padding:2rem">No expense data</div>';
+                    return;
+                }
+
+                listEl.innerHTML = expenses.map(t => {
+                    const cat = t.category || 'Other';
+                    const icon = CAT_ICONS[cat] || 'fa-circle-dot';
+                    const color = CAT_COLORS[cat] || '#b2bec3';
+                    return `
+            <div class="top-tx-item">
+                <div class="top-tx-left">
+                    <div class="top-tx-icon" style="background:${color}22;color:${color}">
+                        <i class="fa-solid ${icon}"></i>
+                    </div>
+                    <div>
+                        <div class="top-tx-title">${t.title}</div>
+                        <div class="top-tx-cat">${cat} &bull; ${formatDate(t.date)}</div>
+                    </div>
+                </div>
+                <div class="top-tx-amount expense">${formatCurrency(t.amount)}</div>
+            </div>`;
+                }).join('');
+            }
+
+            /* ─── 7. Income Sources Bar ─── */
+            function renderIncomeSources(txns) {
+                destroyChart('incomeSources');
+
+                const incomes = txns.filter(t => t.type === 'income');
+                const catMap = {};
+                incomes.forEach(t => { const c = t.category || 'Other'; catMap[c] = (catMap[c] || 0) + t.amount; });
+
+                const cats = Object.keys(catMap).sort((a, b) => catMap[b] - catMap[a]);
+                const values = cats.map(c => catMap[c]);
+                const colors = cats.map((_, i) => PALETTE[i % PALETTE.length]);
+
+                const ctx = document.getElementById('incomeSourceChart').getContext('2d');
+                charts['incomeSources'] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: cats,
+                        datasets: [{
+                            label: 'Income',
+                            data: values,
+                            backgroundColor: colors.map(c => c + 'dd'),
+                            borderColor: colors,
+                            borderWidth: 1.5,
+                            borderRadius: 8,
+                            barPercentage: 0.5
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#fff',
+                                titleColor: '#2d3436',
+                                bodyColor: '#636e72',
+                                borderColor: '#f1f2f6',
+                                borderWidth: 1,
+                                padding: 12,
+                                callbacks: { label: ctx => ' ' + formatCurrency(ctx.raw) }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: gridColor },
+                                ticks: { callback: v => '₹' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v), font: { size: 11 } },
+                                beginAtZero: true
+                            },
+                            y: { grid: { display: false }, ticks: { font: { size: 12 } } }
+                        }
+                    }
+                });
+            }
+
+            // Initial render
+            buildAll();
+        });
+    </script>
+</body>
+
+</html>
