@@ -39,6 +39,10 @@ def transactions():
 def analytics():
     return render_template('analytics.html')
 
+@app.route('/budgets')
+def budgets():
+    return render_template('budgets.html')
+
 @app.route('/api/data', methods=['GET'])
 def get_data():
     data = load_data()
@@ -147,6 +151,33 @@ def update_budget():
             acc['budget_limit'] = new_limit
             break
             
+    save_data(data)
+    return jsonify({"status": "success"})
+
+@app.route('/api/get_category_budgets', methods=['GET'])
+def get_category_budgets():
+    data = load_data()
+    return jsonify(data.get('category_budgets', {}))
+
+@app.route('/api/set_category_budget', methods=['POST'])
+def set_category_budget():
+    req_data = request.json
+    category = req_data.get('category')
+    limit = float(req_data.get('limit', 0))
+    data = load_data()
+    if 'category_budgets' not in data:
+        data['category_budgets'] = {}
+    data['category_budgets'][category] = limit
+    save_data(data)
+    return jsonify({"status": "success"})
+
+@app.route('/api/delete_category_budget', methods=['POST'])
+def delete_category_budget():
+    req_data = request.json
+    category = req_data.get('category')
+    data = load_data()
+    if 'category_budgets' in data and category in data['category_budgets']:
+        del data['category_budgets'][category]
     save_data(data)
     return jsonify({"status": "success"})
 

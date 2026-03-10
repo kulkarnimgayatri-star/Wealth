@@ -6,7 +6,7 @@
       "type": "Savings Account",
       "balance": 155724.4,
       "active": true,
-      "budget_limit": 200000.0
+      "budget_limit": 300000.0
     },
     {
       "id": "work",
@@ -143,5 +143,10 @@
       "category": "shopping",
       "account_id": "personal"
     }
-  ]
+  ],
+  "category_budgets": {
+    "Food": 1000.0,
+    "Travel": 50000.0,
+    "Clothing": 2000.0
+  }
 }
