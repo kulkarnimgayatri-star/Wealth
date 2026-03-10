@@ -160,21 +160,28 @@ def add_transaction():
     if user_data['transactions']:
         new_id = max(t['id'] for t in user_data['transactions']) + 1
     
+    # Find and validate account
+    target_account = None
+    for acc in user_data['accounts']:
+        if acc['id'] == account_id:
+            target_account = acc
+            break
+            
+    if not target_account:
+        return jsonify({"status": "error", "message": "Account not found"}), 404
+
+    # Validate balance for expenses
+    if trans_type == 'expense' and target_account['balance'] < amount:
+        return jsonify({"status": "error", "message": f"Insufficient balance in {target_account['name']}!"}), 400
+
     transaction['id'] = new_id
     user_data['transactions'].insert(0, transaction) # Add to top
     
     # Update Account Balance
-    account_id = transaction.get('account_id')
-    amount = float(transaction.get('amount'))
-    trans_type = transaction.get('type')
-
-    for acc in user_data['accounts']:
-        if acc['id'] == account_id:
-            if trans_type == 'income':
-                acc['balance'] += amount
-            elif trans_type == 'expense':
-                acc['balance'] -= amount
-            break
+    if trans_type == 'income':
+        target_account['balance'] += amount
+    elif trans_type == 'expense':
+        target_account['balance'] -= amount
 
     save_data(all_data)
     

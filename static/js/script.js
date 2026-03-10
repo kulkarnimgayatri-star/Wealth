@@ -125,7 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     addTransForm.reset();
                     fetchData(); // Refresh to show new transaction
                 } else {
-                    alert("Failed to add transaction");
+                    const errorResponse = await response.json();
+                    alert(errorResponse.message || "Failed to add transaction");
                 }
             } catch (error) {
                 console.error("Error adding transaction:", error);
