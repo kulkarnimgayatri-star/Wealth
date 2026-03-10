@@ -1,0 +1,30 @@
+# Sensitive Configuration
+config.py
+
+# User Data and Information
+data.json
+
+# Python Bytecode and Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment Variables
+.env
+.venv
+env/
+venv/
+
+# Flask/Development Trace Files
+instance/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# OS Design files
+.DS_Store
+Thumbs.db
