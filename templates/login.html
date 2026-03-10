@@ -20,7 +20,7 @@
             <h2 class="auth-title">Welcome Back</h2>
             <p class="auth-subtitle">Enter your credentials to access your account</p>
 
-            <form action="/dashboard" method="GET">
+            <form id="login-form">
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input type="email" id="email" name="email" placeholder="name@example.com" required>
@@ -31,8 +31,37 @@
                     <input type="password" id="password" name="password" placeholder="••••••••" required>
                 </div>
 
+                <div id="error-message" style="color: #ff4d4d; margin-bottom: 1rem; display: none;"></div>
+
                 <button type="submit" class="btn-submit">Sign In</button>
             </form>
+
+            <script>
+                document.getElementById('login-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    const errorDiv = document.getElementById('error-message');
+
+                    try {
+                        const response = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email, password })
+                        });
+                        const data = await response.json();
+                        if (data.status === 'success') {
+                            window.location.href = '/dashboard';
+                        } else {
+                            errorDiv.textContent = data.message;
+                            errorDiv.style.display = 'block';
+                        }
+                    } catch (err) {
+                        errorDiv.textContent = 'Something went wrong. Please try again.';
+                        errorDiv.style.display = 'block';
+                    }
+                });
+            </script>
 
             <div class="auth-footer">
                 <p>Don't have an account? <a href="/signup">Sign up</a></p>

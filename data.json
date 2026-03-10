@@ -4,7 +4,7 @@
       "id": "personal",
       "name": "Personal",
       "type": "Savings Account",
-      "balance": 155724.4,
+      "balance": 145724.4,
       "active": true,
       "budget_limit": 300000.0
     },
@@ -26,6 +26,24 @@
     }
   ],
   "transactions": [
+    {
+      "title": "zara",
+      "category": "Clothing",
+      "amount": 5000,
+      "type": "expense",
+      "date": "2026-03-10T04:45:04.594Z",
+      "account_id": "personal",
+      "id": 15
+    },
+    {
+      "title": "zara",
+      "category": "Clothing",
+      "amount": 5000,
+      "type": "expense",
+      "date": "2026-03-10T04:45:01.713Z",
+      "account_id": "personal",
+      "id": 14
+    },
     {
       "title": "get together",
       "category": "Travel",
@@ -148,5 +166,80 @@
     "Food": 1000.0,
     "Travel": 50000.0,
     "Clothing": 2000.0
+  },
+  "users": {
+    "anmol@gmail.com": {
+      "password": "anmol1125",
+      "name": "Anmol Late"
+    },
+    "gayatri@gmail.com": {
+      "password": "Gayatri@2005",
+      "name": "gayatri",
+      "data": {
+        "accounts": [
+          {
+            "id": "personal_1",
+            "name": "personal",
+            "type": "Savings Account",
+            "balance": -4000.0,
+            "active": true,
+            "budget_limit": 10000.0
+          },
+          {
+            "id": "savings_2",
+            "name": "savings",
+            "type": "Savings Account",
+            "balance": 5000.0,
+            "active": false,
+            "budget_limit": 10000.0
+          }
+        ],
+        "transactions": [
+          {
+            "title": "zara",
+            "category": "Clothing",
+            "amount": 5000,
+            "type": "expense",
+            "date": "2026-03-10T05:02:45.578Z",
+            "account_id": "personal_1",
+            "id": 1
+          }
+        ],
+        "category_budgets": {
+          "Clothing": 5000.0
+        }
+      }
+    },
+    "anmollate@gmail.com": {
+      "password": "anmol1125",
+      "name": "Anmol",
+      "data": {
+        "accounts": [
+          {
+            "id": "trading_account_1",
+            "name": "Trading Account",
+            "type": "Investment",
+            "balance": 30000.0,
+            "active": true,
+            "budget_limit": 10000.0
+          }
+        ],
+        "transactions": [
+          {
+            "title": "stocks",
+            "category": "Investment",
+            "amount": 20000,
+            "type": "expense",
+            "date": "2026-03-10T05:14:02.212Z",
+            "account_id": "trading_account_1",
+            "id": 1
+          }
+        ],
+        "category_budgets": {
+          "Investment": 10000.0,
+          "Salary": 20000.0
+        }
+      }
+    }
   }
 }

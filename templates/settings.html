@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Pilot — Settings</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="/static/images/logo.png" alt="Wealth Logo" class="logo">
+                <span class="brand-name">Money Pilot</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="/dashboard" class="nav-item"><i class="fa-solid fa-shapes"></i><span>Dashboard</span></a>
+                <a href="/transactions" class="nav-item"><i class="fa-solid fa-wallet"></i><span>Transactions</span></a>
+                <a href="/analytics" class="nav-item"><i class="fa-solid fa-chart-pie"></i><span>Analytics</span></a>
+                <a href="/budgets" class="nav-item"><i class="fa-solid fa-layer-group"></i><span>Budgets</span></a>
+                <a href="/settings" class="nav-item active"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/login" class="nav-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1 class="page-title">Settings</h1>
+                <div class="user-profile">
+                    <img src="/static/images/avatar.png" alt="User Avatar" class="avatar">
+                </div>
+            </header>
+
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <div class="sc-header">
+                        <i class="fa-solid fa-envelope"></i>
+                        <div>
+                            <h3>Email Notifications</h3>
+                            <p>Manage budget alerts and report emails</p>
+                        </div>
+                    </div>
+
+                    <div class="sc-body">
+                        <div class="form-group">
+                            <label>Registered Email Address</label>
+                            <input type="email" value="user@example.com" placeholder="Enter your email" disabled>
+                            <p class="form-hint">Notifications for budget limits will be sent here.</p>
+                        </div>
+
+                        <hr class="separator">
+
+                        <h4>Gmail Configuration</h4>
+                        <p class="sc-note">To enable email alerts, please update the <strong>config.py</strong> file in
+                            your project directory with your credentials.</p>
+
+                        <div class="config-guide">
+                            <h5>How to find your Email Key?</h5>
+                            <ol>
+                                <li>Enable <strong>2-Step Verification</strong> on your Google Account.</li>
+                                <li>Go to your Google Account settings, search for <strong>App Passwords</strong>.</li>
+                                <li>Select 'Mail' and 'Other (Money Pilot)'.</li>
+                                <li>Generate and copy the 16-character code.</li>
+                                <li>Paste it into <code>config.py</code> as <code>MAIL_PASSWORD</code>.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="sc-header">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <div>
+                            <h3>Security & Privacy</h3>
+                            <p>Account access and data protection</p>
+                        </div>
+                    </div>
+
+                    <div class="sc-body">
+                        <div class="form-group">
+                            <label>Account Password</label>
+                            <button class="btn-outline">Change Password</button>
+                        </div>
+
+                        <div class="feature-toggle">
+                            <div>
+                                <strong>Two-Factor Authentication</strong>
+                                <p>Add an extra layer of security to your account.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 32px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .sc-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .sc-header i {
+            font-size: 24px;
+            color: #6c5ce7;
+            padding: 12px;
+            background: rgba(108, 92, 231, 0.1);
+            border-radius: 12px;
+        }
+
+        .sc-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #2d3436;
+        }
+
+        .sc-header p {
+            margin: 4px 0 0 0;
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+
+        .sc-body h4 {
+            margin: 24px 0 12px 0;
+            color: #2d3436;
+        }
+
+        .sc-note {
+            color: #636e72;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #6c5ce7;
+        }
+
+        .config-guide {
+            margin-top: 16px;
+            padding: 16px;
+            background: #fff;
+            border: 1px dashed #dee2e6;
+            border-radius: 12px;
+        }
+
+        .config-guide h5 {
+            margin: 0 0 10px 0;
+        }
+
+        .config-guide ol {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 0.85rem;
+            color: #636e72;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .config-guide code {
+            background: #f1f2f6;
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: #d63031;
+        }
+
+        .separator {
+            margin: 24px 0;
+            border: 0;
+            border-top: 1px solid #f1f2f6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2d3436;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: #fdfdfd;
+        }
+
+        .form-hint {
+            margin-top: 6px;
+            color: #b2bec3;
+            font-size: 0.8rem;
+        }
+
+        .btn-outline {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1.5px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            background: #f8f9fa;
+            border-color: #6c5ce7;
+            color: #6c5ce7;
+        }
+
+        .feature-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f1f2f6;
+        }
+
+        .feature-toggle strong {
+            display: block;
+            color: #2d3436;
+        }
+
+        .feature-toggle p {
+            margin: 4px 0 0 0;
+            font-size: 0.8rem;
+            color: #636e72;
+        }
+
+        /* Switch toggle CSS */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+        }
+
+        input:checked+.slider {
+            background-color: #6c5ce7;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+    </style>
+</body>
+
+</html>

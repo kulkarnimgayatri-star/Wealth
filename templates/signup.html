@@ -20,7 +20,7 @@
             <h2 class="auth-title">Create an Account</h2>
             <p class="auth-subtitle">Start managing your wealth smarter today</p>
 
-            <form action="/dashboard" method="GET">
+            <form id="signup-form">
                 <div class="form-group">
                     <label for="name">Full Name</label>
                     <input type="text" id="name" name="name" placeholder="John Doe" required>
@@ -42,8 +42,45 @@
                         required>
                 </div>
 
+                <div id="error-message" style="color: #ff4d4d; margin-bottom: 1rem; display: none;"></div>
+
                 <button type="submit" class="btn-submit">Sign Up</button>
             </form>
+
+            <script>
+                document.getElementById('signup-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('name').value;
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    const confirmPassword = document.getElementById('confirm-password').value;
+                    const errorDiv = document.getElementById('error-message');
+
+                    if (password !== confirmPassword) {
+                        errorDiv.textContent = 'Passwords do not match';
+                        errorDiv.style.display = 'block';
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/api/signup', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name, email, password })
+                        });
+                        const data = await response.json();
+                        if (data.status === 'success') {
+                            window.location.href = '/dashboard';
+                        } else {
+                            errorDiv.textContent = data.message;
+                            errorDiv.style.display = 'block';
+                        }
+                    } catch (err) {
+                        errorDiv.textContent = 'Something went wrong. Please try again.';
+                        errorDiv.style.display = 'block';
+                    }
+                });
+            </script>
 
             <div class="auth-footer">
                 <p>Already have an account? <a href="/login">Sign in</a></p>
