@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Money Pilot — Settings</title>
     <link rel="stylesheet" href="/static/css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .settings-grid {
@@ -14,15 +16,17 @@
             gap: 2rem;
             max-width: 800px;
         }
+
         .profile-card {
             background: white;
             border-radius: 20px;
             padding: 2.5rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
             display: flex;
             align-items: center;
             gap: 2rem;
         }
+
         .avatar-lg {
             width: 100px;
             height: 100px;
@@ -37,14 +41,36 @@
             box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
             object-fit: cover;
         }
+
         .profile-info {
             flex: 1;
         }
-        .b-form-group { margin-bottom: 1.25rem; }
-        .b-form-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; }
-        .b-form-group input { width: 100%; padding: 12px; border: 1.5px solid #e9ecef; border-radius: 10px; font-family: 'Inter'; font-size: 1rem; }
-        .b-form-group input:focus { border-color: #6c5ce7; outline: none; }
-        
+
+        .b-form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .b-form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .b-form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #e9ecef;
+            border-radius: 10px;
+            font-family: 'Inter';
+            font-size: 1rem;
+        }
+
+        .b-form-group input:focus {
+            border-color: #6c5ce7;
+            outline: none;
+        }
+
         .btn-update {
             background: #6c5ce7;
             color: white;
@@ -56,9 +82,14 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .btn-update:hover { background: #5649c0; transform: translateY(-2px); }
+
+        .btn-update:hover {
+            background: #5649c0;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
+
 <body>
     <div class="app-container">
         <!-- Sidebar -->
@@ -92,9 +123,14 @@
             <header class="top-bar">
                 <h1 class="page-title">Profile Settings</h1>
                 <div class="top-bar-actions">
-                    <div class="user-profile" id="top-bar-profile" style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-                        <div class="nav-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: #6c5ce7; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem;"></div>
-                        <a href="/logout" class="logout-link" title="Logout" style="color: var(--text-gray); font-size: 1.1rem;"><i class="fa-solid fa-power-off"></i></a>
+                    <div class="user-profile" id="top-bar-profile"
+                        style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                        <div class="nav-avatar"
+                            style="width: 40px; height: 40px; border-radius: 50%; background: #6c5ce7; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem;">
+                        </div>
+                        <a href="/logout" class="logout-link" title="Logout"
+                            style="color: var(--text-gray); font-size: 1.1rem;"><i
+                                class="fa-solid fa-power-off"></i></a>
                     </div>
                 </div>
             </header>
@@ -125,7 +161,7 @@
             setTimeout(() => {
                 let name = localStorage.getItem('user_name') || "Gayatri K";
                 let storedAvatar = localStorage.getItem('user_avatar') || "";
-                
+
                 document.getElementById('user-fullname').value = name;
                 document.getElementById('user-avatar-url').value = storedAvatar;
 
@@ -134,10 +170,10 @@
                 document.getElementById('save-profile-btn').addEventListener('click', () => {
                     const newName = document.getElementById('user-fullname').value;
                     const newUrl = document.getElementById('user-avatar-url').value;
-                    
+
                     localStorage.setItem('user_name', newName);
                     localStorage.setItem('user_avatar', newUrl);
-                    
+
                     updateAvatars(newName, newUrl);
                     alert("Profile updated successfully!");
                 });
@@ -146,7 +182,7 @@
 
         function updateAvatars(name, imgUrl) {
             const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U';
-            
+
             const mainAvatar = document.getElementById('main-avatar');
             const navAvatar = document.querySelector('.nav-avatar');
 
@@ -160,4 +196,5 @@
         }
     </script>
 </body>
+
 </html>

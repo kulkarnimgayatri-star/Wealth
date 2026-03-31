@@ -15,16 +15,19 @@
                 transform: translateX(400px);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
             }
         }
+
         @keyframes slideOut {
             from {
                 transform: translateX(0);
                 opacity: 1;
             }
+
             to {
                 transform: translateX(400px);
                 opacity: 0;
@@ -67,19 +70,28 @@
             <header class="top-bar">
                 <div>
                     <h1 class="page-title" id="greeting-text">Welcome back, User!</h1>
-                    <div class="bs-sub" style="font-size: 0.9rem; margin-top: 4px;">Here is what's happening with your wealth today.</div>
+                    <div class="bs-sub" style="font-size: 0.9rem; margin-top: 4px;">Here is what's happening with your
+                        wealth today.</div>
                 </div>
                 <div class="top-bar-actions">
-                    <div class="month-pill" style="display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e9ecef; border-radius: 20px; padding: 6px 16px; font-size: 1rem; font-weight: 700; color: var(--text-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                        <button class="month-arrow" id="prev-month" style="background:none; border:none; cursor:pointer; color:#636e72;" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <div class="month-pill"
+                        style="display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e9ecef; border-radius: 20px; padding: 6px 16px; font-size: 1rem; font-weight: 700; color: var(--text-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <button class="month-arrow" id="prev-month"
+                            style="background:none; border:none; cursor:pointer; color:#636e72;"
+                            onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
                         <span id="month-label" style="min-width: 120px; text-align: center;">—</span>
-                        <button class="month-arrow" id="next-month" style="background:none; border:none; cursor:pointer; color:#636e72;" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                        <button class="month-arrow" id="next-month"
+                            style="background:none; border:none; cursor:pointer; color:#636e72;"
+                            onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
                     <div class="account-switcher-container" style="position: relative;">
-                        <button class="btn-secondary" id="account-switcher-btn" style="padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <i class="fa-solid fa-credit-card"></i> <span id="active-account-name">Select Account</span> <i class="fa-solid fa-chevron-down"></i>
+                        <button class="btn-secondary" id="account-switcher-btn"
+                            style="padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-credit-card"></i> <span id="active-account-name">Select Account</span>
+                            <i class="fa-solid fa-chevron-down"></i>
                         </button>
-                        <div id="account-dropdown" class="card" style="display: none; position: absolute; top: calc(100% + 10px); right: 0; width: 220px; z-index: 1000; padding: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                        <div id="account-dropdown" class="card"
+                            style="display: none; position: absolute; top: calc(100% + 10px); right: 0; width: 220px; z-index: 1000; padding: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
                             <!-- Populated by JS -->
                         </div>
                     </div>
@@ -87,7 +99,9 @@
                         Transaction</button>
                     <div class="user-profile" style="display: flex; align-items: center; gap: 12px;">
                         <img src="/static/images/avatar.png" alt="User Avatar" class="avatar">
-                        <a href="/logout" class="logout-link" title="Logout" style="color: var(--text-gray); font-size: 1.1rem; transition: color 0.2s;"><i class="fa-solid fa-power-off"></i></a>
+                        <a href="/logout" class="logout-link" title="Logout"
+                            style="color: var(--text-gray); font-size: 1.1rem; transition: color 0.2s;"><i
+                                class="fa-solid fa-power-off"></i></a>
                     </div>
                 </div>
             </header>
@@ -98,7 +112,7 @@
 
             <!-- Main Dashboard Area (Horizontal Focus) -->
             <div style="display: flex; flex-direction: column; gap: 2rem; margin-top: 2rem;">
-                
+
                 <!-- Category Analysis -->
                 <div class="card">
                     <div class="card-header">
@@ -114,15 +128,19 @@
                 <div class="card">
                     <div class="card-header" style="border: none;">
                         <h3>My Accounts</h3>
-                        <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="document.getElementById('add-account-modal').style.display='flex'"><i class="fa-solid fa-plus"></i></button>
+                        <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;"
+                            onclick="document.getElementById('add-account-modal').style.display='flex'"><i
+                                class="fa-solid fa-plus"></i></button>
                     </div>
-                    <div id="accounts-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; padding: 0 1.5rem 2.5rem 1.5rem;">
+                    <div id="accounts-grid"
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; padding: 0 1.5rem 2.5rem 1.5rem;">
                         <!-- Horizontal Grid populated by JS -->
                     </div>
                 </div>
 
                 <!-- Savings Goals (Now optional visual) -->
-                <div id="goals-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+                <div id="goals-grid"
+                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
                     <!-- Goals cards -->
                 </div>
             </div>

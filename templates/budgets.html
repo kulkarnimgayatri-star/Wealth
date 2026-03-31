@@ -640,7 +640,7 @@
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-dark);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         #month-label {
@@ -721,16 +721,21 @@
                         <button class="month-arrow" id="next-month"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
                     <div class="account-switcher-container" style="position: relative;">
-                        <button class="btn-secondary" id="account-switcher-btn" style="padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; background: white; border: 1px solid #dfe6e9;">
-                            <i class="fa-solid fa-credit-card"></i> <span id="active-account-name">Select Account</span> <i class="fa-solid fa-chevron-down"></i>
+                        <button class="btn-secondary" id="account-switcher-btn"
+                            style="padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; background: white; border: 1px solid #dfe6e9;">
+                            <i class="fa-solid fa-credit-card"></i> <span id="active-account-name">Select Account</span>
+                            <i class="fa-solid fa-chevron-down"></i>
                         </button>
-                        <div id="account-dropdown" style="display: none; position: absolute; top: calc(100% + 10px); right: 0; width: 220px; z-index: 1000; padding: 10px; background: white; border: 1px solid #dfe6e9; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                        <div id="account-dropdown"
+                            style="display: none; position: absolute; top: calc(100% + 10px); right: 0; width: 220px; z-index: 1000; padding: 10px; background: white; border: 1px solid #dfe6e9; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
                             <!-- Populated by JS -->
                         </div>
                     </div>
                     <div class="user-profile" style="display: flex; align-items: center; gap: 12px;">
                         <img src="/static/images/avatar.png" alt="User Avatar" class="avatar">
-                        <a href="/logout" class="logout-link" title="Logout" style="color: var(--text-gray); font-size: 1.1rem; transition: color 0.2s;"><i class="fa-solid fa-power-off"></i></a>
+                        <a href="/logout" class="logout-link" title="Logout"
+                            style="color: var(--text-gray); font-size: 1.1rem; transition: color 0.2s;"><i
+                                class="fa-solid fa-power-off"></i></a>
                     </div>
                 </div>
             </header>
@@ -1048,7 +1053,7 @@
             window.toggleAccountInBudgets = async (id) => {
                 const targetAccount = appData.accounts.find(a => a.id === id);
                 if (targetAccount) showSuccessMessage(`Switched to ${targetAccount.name}`);
-                
+
                 await fetch('/api/toggle_account', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1084,9 +1089,9 @@
                     el.innerHTML = '<div class="empty-state"><i class="fa-solid fa-receipt"></i><p>No transactions for this month.</p></div>';
                     return;
                 }
-                
+
                 // Sort by date desc
-                txns.sort((a,b) => new Date(b.date) - new Date(a.date));
+                txns.sort((a, b) => new Date(b.date) - new Date(a.date));
 
                 el.innerHTML = `
                     <table style="width:100%; border-collapse: collapse; font-size: 0.9rem;">
@@ -1100,8 +1105,8 @@
                         </thead>
                         <tbody>
                             ${txns.map(t => {
-                                const isExp = t.type === 'expense';
-                                return `
+                    const isExp = t.type === 'expense';
+                    return `
                                 <tr style="border-bottom: 1px solid #f8f9fa;">
                                     <td style="padding: 12px 0;">${new Date(t.date).toLocaleDateString()}</td>
                                     <td style="padding: 12px 0; font-weight: 600;">${t.title}</td>
@@ -1110,7 +1115,7 @@
                                         ${isExp ? '-' : '+'}${fmt(t.amount)}
                                     </td>
                                 </tr>`;
-                            }).join('')}
+                }).join('')}
                         </tbody>
                     </table>
                 `;
@@ -1270,8 +1275,8 @@
                             }
                         },
                         scales: {
-                            x: { 
-                                grid: { color: 'rgba(0,0,0,0.03)' }, 
+                            x: {
+                                grid: { color: 'rgba(0,0,0,0.03)' },
                                 beginAtZero: true,
                                 ticks: { callback: v => fmtShort(v), font: { size: 10 } }
                             },

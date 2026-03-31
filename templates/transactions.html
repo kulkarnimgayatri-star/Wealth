@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Sidebar placeholder (copied from index) -->
@@ -41,34 +43,50 @@
             <header class="top-bar">
                 <h1 class="page-title">Transactions</h1>
                 <div class="top-bar-actions">
-                    <div class="month-pill" style="display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e9ecef; border-radius: 20px; padding: 6px 16px; font-size: 1rem; font-weight: 700; color: var(--text-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                        <button class="month-arrow" id="prev-month" style="background:none; border:none; cursor:pointer;" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <div class="month-pill"
+                        style="display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e9ecef; border-radius: 20px; padding: 6px 16px; font-size: 1rem; font-weight: 700; color: var(--text-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <button class="month-arrow" id="prev-month"
+                            style="background:none; border:none; cursor:pointer;" onclick="changeMonth(-1)"><i
+                                class="fa-solid fa-chevron-left"></i></button>
                         <span id="month-label" style="min-width: 120px; text-align: center;">—</span>
-                        <button class="month-arrow" id="next-month" style="background:none; border:none; cursor:pointer;" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
-                        <button class="btn-secondary" id="all-time-btn" onclick="toggleAllTimeHistory()" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 12px; margin-left: 8px;">All Time</button>
+                        <button class="month-arrow" id="next-month"
+                            style="background:none; border:none; cursor:pointer;" onclick="changeMonth(1)"><i
+                                class="fa-solid fa-chevron-right"></i></button>
+                        <button class="btn-secondary" id="all-time-btn" onclick="toggleAllTimeHistory()"
+                            style="padding: 4px 10px; font-size: 0.75rem; border-radius: 12px; margin-left: 8px;">All
+                            Time</button>
                     </div>
                     <div class="account-switcher-container" style="position: relative;">
-                        <button class="btn-secondary" id="account-switcher-btn" style="padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <i class="fa-solid fa-credit-card"></i> <span id="active-account-name">Select Account</span> <i class="fa-solid fa-chevron-down"></i>
+                        <button class="btn-secondary" id="account-switcher-btn"
+                            style="padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-credit-card"></i> <span id="active-account-name">Select Account</span>
+                            <i class="fa-solid fa-chevron-down"></i>
                         </button>
-                        <div id="account-dropdown" class="card" style="display: none; position: absolute; top: calc(100% + 10px); right: 0; width: 220px; z-index: 1000; padding: 10px;">
+                        <div id="account-dropdown" class="card"
+                            style="display: none; position: absolute; top: calc(100% + 10px); right: 0; width: 220px; z-index: 1000; padding: 10px;">
                             <!-- Populated by JS -->
                         </div>
                     </div>
-                    <button class="btn-primary" id="add-trans-btn" style="padding: 10px 20px; font-weight: 700;"><i class="fa-solid fa-plus"></i> Add Transaction</button>
-                    <div class="user-profile" style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.location.href='/settings'">
+                    <button class="btn-primary" id="add-trans-btn" style="padding: 10px 20px; font-weight: 700;"><i
+                            class="fa-solid fa-plus"></i> Add Transaction</button>
+                    <div class="user-profile" style="display: flex; align-items: center; gap: 12px; cursor: pointer;"
+                        onclick="window.location.href='/settings'">
                         <img src="/static/images/avatar.png" alt="User Avatar" class="avatar">
-                        <a href="/logout" class="logout-link" title="Logout" style="color: var(--text-gray); font-size: 1.1rem;"><i class="fa-solid fa-power-off"></i></a>
+                        <a href="/logout" class="logout-link" title="Logout"
+                            style="color: var(--text-gray); font-size: 1.1rem;"><i
+                                class="fa-solid fa-power-off"></i></a>
                     </div>
                 </div>
             </header>
 
             <!-- Enhanced Transactions Ledger (Selectable by account/month) -->
             <div class="card" style="min-height: 700px; margin-top: 2rem;">
-                <div class="card-header" style="padding-bottom: 1.5rem; border-bottom: 1px solid #f1f2f6; display: flex; justify-content: space-between; align-items: center;">
+                <div class="card-header"
+                    style="padding-bottom: 1.5rem; border-bottom: 1px solid #f1f2f6; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <h3 style="font-size: 1.2rem; font-weight: 800;">Full Transaction History</h3>
-                        <div class="bs-sub" style="font-size: 0.85rem; margin-top: 4px;">Auditing records by account and month</div>
+                        <div class="bs-sub" style="font-size: 0.85rem; margin-top: 4px;">Auditing records by account and
+                            month</div>
                     </div>
                 </div>
 
@@ -76,8 +94,10 @@
                     <!-- Filter/Search Bar -->
                     <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
                         <div style="flex: 1; position: relative;">
-                            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #a4b0be;"></i>
-                            <input type="text" id="trans-search-box" placeholder="Search entries..." style="width: 100%; padding: 12px 12px 12px 45px; border: 1.5px solid #f1f2f6; border-radius: 12px; font-family: 'Inter'; font-size: 0.95rem;">
+                            <i class="fa-solid fa-magnifying-glass"
+                                style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #a4b0be;"></i>
+                            <input type="text" id="trans-search-box" placeholder="Search entries..."
+                                style="width: 100%; padding: 12px 12px 12px 45px; border: 1.5px solid #f1f2f6; border-radius: 12px; font-family: 'Inter'; font-size: 0.95rem;">
                         </div>
                     </div>
 
@@ -99,12 +119,14 @@
             <form id="add-transaction-form" style="margin-top: 1.5rem;">
                 <div class="form-group">
                     <label>Description</label>
-                    <input type="text" name="title" placeholder="e.g. Amazon Shopping" required style="padding: 12px; border-radius: 10px; border: 1.5px solid #eee;">
+                    <input type="text" name="title" placeholder="e.g. Amazon Shopping" required
+                        style="padding: 12px; border-radius: 10px; border: 1.5px solid #eee;">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                     <div class="form-group">
                         <label>Category</label>
-                        <select name="category" required style="padding: 12px; border-radius: 10px; border: 1.5px solid #eee;">
+                        <select name="category" required
+                            style="padding: 12px; border-radius: 10px; border: 1.5px solid #eee;">
                             <option value="Food">Food</option>
                             <option value="Shopping">Shopping</option>
                             <option value="Salary">Salary</option>
@@ -117,7 +139,8 @@
                     </div>
                     <div class="form-group">
                         <label>Type</label>
-                        <select name="type" required style="padding: 12px; border-radius: 10px; border: 1.5px solid #eee;">
+                        <select name="type" required
+                            style="padding: 12px; border-radius: 10px; border: 1.5px solid #eee;">
                             <option value="expense">Expense</option>
                             <option value="income">Income</option>
                         </select>
@@ -125,9 +148,12 @@
                 </div>
                 <div class="form-group">
                     <label>Amount (₹)</label>
-                    <input type="number" name="amount" placeholder="0.00" step="0.01" required style="padding: 12px; border-radius: 10px; border: 1.5px solid #eee;">
+                    <input type="number" name="amount" placeholder="0.00" step="0.01" required
+                        style="padding: 12px; border-radius: 10px; border: 1.5px solid #eee;">
                 </div>
-                <button type="submit" class="btn-primary" style="width: 100%; padding: 14px; font-weight: 800; border-radius: 12px; margin-top: 1rem;">Confirm Transaction</button>
+                <button type="submit" class="btn-primary"
+                    style="width: 100%; padding: 14px; font-weight: 800; border-radius: 12px; margin-top: 1rem;">Confirm
+                    Transaction</button>
             </form>
         </div>
     </div>
@@ -135,4 +161,5 @@
 
     <script src="/static/js/script.js"></script>
 </body>
+
 </html>
