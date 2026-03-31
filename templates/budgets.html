@@ -632,14 +632,21 @@
         .month-pill {
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: #f6f8fc;
+            gap: 12px;
+            background: #fff;
             border: 1px solid #e9ecef;
             border-radius: 20px;
-            padding: 5px 14px;
-            font-size: .82rem;
-            font-weight: 600;
-            color: #636e72;
+            padding: 8px 18px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        #month-label {
+            min-width: 140px;
+            text-align: center;
+            font-size: 1.25rem;
         }
 
         .month-arrow {
@@ -676,25 +683,29 @@
 <body>
     <div class="app-container">
 
-        <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="logo-container">
-                <img src="/static/images/logo.png" alt="Wealth Logo" class="logo">
-                <span class="brand-name">Money Pilot</span>
+            <div class="logo-container" style="justify-content: center; margin-bottom: 2.5rem;">
+                <img src="/static/images/logo.png" alt="Logo" class="logo" style="width: 40px; height: 40px;">
             </div>
+
             <nav class="nav-menu">
-                <a href="/dashboard" class="nav-item"><i class="fa-solid fa-shapes"></i><span>Dashboard</span></a>
-                <a href="/transactions" class="nav-item"><i class="fa-solid fa-wallet"></i><span>Transactions</span></a>
-                <a href="/analytics" class="nav-item"><i class="fa-solid fa-chart-pie"></i><span>Analytics</span></a>
-                <a href="/budgets" class="nav-item active"><i
-                        class="fa-solid fa-layer-group"></i><span>Budgets</span></a>
-                <a href="/settings" class="nav-item"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
-            </nav>
-            <div class="sidebar-footer">
-                <a href="/login" class="nav-logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log Out</span>
+                <a href="/dashboard" class="nav-item">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
                 </a>
-            </div>
+                <a href="/transactions" class="nav-item">
+                    <i class="fa-solid fa-list-ul"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="/budgets" class="nav-item active">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Budgets</span>
+                </a>
+                <a href="/settings" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
         </aside>
 
         <!-- Main -->
@@ -709,8 +720,17 @@
                         <span id="month-label">—</span>
                         <button class="month-arrow" id="next-month"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
-                    <div class="user-profile">
+                    <div class="account-switcher-container" style="position: relative;">
+                        <button class="btn-secondary" id="account-switcher-btn" style="padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; background: white; border: 1px solid #dfe6e9;">
+                            <i class="fa-solid fa-credit-card"></i> <span id="active-account-name">Select Account</span> <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div id="account-dropdown" style="display: none; position: absolute; top: calc(100% + 10px); right: 0; width: 220px; z-index: 1000; padding: 10px; background: white; border: 1px solid #dfe6e9; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <div class="user-profile" style="display: flex; align-items: center; gap: 12px;">
                         <img src="/static/images/avatar.png" alt="User Avatar" class="avatar">
+                        <a href="/logout" class="logout-link" title="Logout" style="color: var(--text-gray); font-size: 1.1rem; transition: color 0.2s;"><i class="fa-solid fa-power-off"></i></a>
                     </div>
                 </div>
             </header>
@@ -803,6 +823,8 @@
                         </div>
                     </div>
                 </div>
+
+
 
             </div>
         </main>
@@ -937,9 +959,13 @@
 
             /* ── Compute month transactions ── */
             function monthTxns() {
+                const activeAccount = appData.accounts.find(a => a.active);
                 return appData.transactions.filter(t => {
                     const d = new Date(t.date);
-                    return d.getFullYear() === viewYear && d.getMonth() === viewMonth;
+                    if (d.getFullYear() !== viewYear || d.getMonth() !== viewMonth) return false;
+                    // Filter by active account if selected
+                    if (activeAccount && t.account_id !== activeAccount.id) return false;
+                    return true;
                 });
             }
 
@@ -983,6 +1009,111 @@
                 renderAccountBudgets(accSpend);
                 renderCategoryBudgets(catSpend);
                 renderSpendingChart(catSpend);
+                renderMonthTransactions(txns);
+                updateAccountSwitcher();
+            }
+
+            const accountSwitcherBtn = document.getElementById('account-switcher-btn');
+            const accountDropdown = document.getElementById('account-dropdown');
+            if (accountSwitcherBtn && accountDropdown) {
+                accountSwitcherBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    accountDropdown.style.display = accountDropdown.style.display === 'block' ? 'none' : 'block';
+                };
+                window.addEventListener('click', (e) => {
+                    if (!accountSwitcherBtn.contains(e.target)) {
+                        accountDropdown.style.display = 'none';
+                    }
+                });
+            }
+
+            function updateAccountSwitcher() {
+                const activeAcc = appData.accounts.find(a => a.active);
+                const nameEl = document.getElementById('active-account-name');
+                if (nameEl) nameEl.textContent = activeAcc ? activeAcc.name : 'Select Account';
+
+                const dropdown = document.getElementById('account-dropdown');
+                if (dropdown) {
+                    dropdown.innerHTML = appData.accounts.map(acc => `
+                        <div class="account-option ${acc.active ? 'active' : ''}" 
+                             onclick="toggleAccountInBudgets('${acc.id}', event)"
+                             style="padding: 10px; cursor: pointer; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; ${acc.active ? 'background-color: #f1f2f6; color: #6c5ce7; font-weight: 700;' : ''}">
+                            <span>${acc.name}</span>
+                            ${acc.active ? '<i class="fa-solid fa-check"></i>' : ''}
+                        </div>
+                    `).join('') || '<p style="font-size: 0.8rem; color: #aaa;">No accounts available</p>';
+                }
+            }
+
+            window.toggleAccountInBudgets = async (id) => {
+                const targetAccount = appData.accounts.find(a => a.id === id);
+                if (targetAccount) showSuccessMessage(`Switched to ${targetAccount.name}`);
+                
+                await fetch('/api/toggle_account', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ account_id: id })
+                });
+                await loadAll();
+                renderAll();
+            };
+
+            function showSuccessMessage(message) {
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    background: linear-gradient(135deg, #00b894, #00cec9);
+                    color: white;
+                    padding: 16px 24px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                    font-weight: 500;
+                    z-index: 1000;
+                `;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+
+            /* ── Month Transactions ── */
+            function renderMonthTransactions(txns) {
+                const el = document.getElementById('month-transactions-list');
+                if (!txns.length) {
+                    el.innerHTML = '<div class="empty-state"><i class="fa-solid fa-receipt"></i><p>No transactions for this month.</p></div>';
+                    return;
+                }
+                
+                // Sort by date desc
+                txns.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+                el.innerHTML = `
+                    <table style="width:100%; border-collapse: collapse; font-size: 0.9rem;">
+                        <thead style="text-align: left; color: #b2bec3; border-bottom: 1px solid #f1f2f6;">
+                            <tr>
+                                <th style="padding: 10px 0;">Date</th>
+                                <th style="padding: 10px 0;">Title</th>
+                                <th style="padding: 10px 0;">Category</th>
+                                <th style="padding: 10px 0; text-align: right;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${txns.map(t => {
+                                const isExp = t.type === 'expense';
+                                return `
+                                <tr style="border-bottom: 1px solid #f8f9fa;">
+                                    <td style="padding: 12px 0;">${new Date(t.date).toLocaleDateString()}</td>
+                                    <td style="padding: 12px 0; font-weight: 600;">${t.title}</td>
+                                    <td style="padding: 12px 0;"><span style="background:#f1f2f6; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">${t.category}</span></td>
+                                    <td style="padding: 12px 0; text-align: right; color: ${isExp ? '#d63031' : '#00b894'}; font-weight: 700;">
+                                        ${isExp ? '-' : '+'}${fmt(t.amount)}
+                                    </td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
             }
 
             /* ── Summary Strip ── */
@@ -1106,43 +1237,47 @@
                         labels,
                         datasets: [
                             {
-                                label: 'Budget Limit',
-                                data: budgets,
-                                backgroundColor: 'rgba(108,92,231,0.18)',
-                                borderColor: '#6c5ce7',
-                                borderWidth: 1.5,
-                                borderRadius: 6,
-                                barPercentage: 0.55,
-                            },
-                            {
                                 label: 'Spent',
                                 data: spends,
                                 backgroundColor: spends.map((s, i) => {
                                     const p = budgets[i] > 0 ? (s / budgets[i]) * 100 : 0;
-                                    return p >= 100 ? 'rgba(214,48,49,0.82)' : p >= 75 ? 'rgba(253,203,110,0.85)' : 'rgba(0,184,148,0.82)';
+                                    return p >= 100 ? 'rgba(214,48,49,0.85)' : p >= 75 ? 'rgba(253,203,110,0.85)' : 'rgba(108,92,231,0.85)';
                                 }),
                                 borderRadius: 6,
-                                barPercentage: 0.55,
+                                barPercentage: 0.6,
+                            },
+                            {
+                                label: 'Budget Limit',
+                                data: budgets,
+                                backgroundColor: 'rgba(233,236,239,1)',
+                                borderColor: '#dfe6e9',
+                                borderWidth: 1,
+                                borderRadius: 6,
+                                barPercentage: 0.6,
                             }
                         ]
                     },
                     options: {
+                        indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { labels: { boxWidth: 12, borderRadius: 3, useBorderRadius: true } },
+                            legend: { display: false },
                             tooltip: {
                                 backgroundColor: '#fff', titleColor: '#2d3436',
                                 bodyColor: '#636e72', borderColor: '#f1f2f6', borderWidth: 1, padding: 12,
-                                callbacks: { label: ctx => '  ' + fmt(ctx.raw) }
+                                callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + fmt(ctx.raw) }
                             }
                         },
                         scales: {
-                            x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-                            y: {
-                                grid: { color: 'rgba(0,0,0,0.05)' },
+                            x: { 
+                                grid: { color: 'rgba(0,0,0,0.03)' }, 
                                 beginAtZero: true,
-                                ticks: { callback: v => fmtShort(v), font: { size: 11 } }
+                                ticks: { callback: v => fmtShort(v), font: { size: 10 } }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: { font: { size: 11, weight: '600' } }
                             }
                         }
                     }
