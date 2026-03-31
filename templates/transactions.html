@@ -4,67 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Finance Manager - Transactions</title>
+    <title>Transactions - Money Pilot</title>
     <link rel="stylesheet" href="/static/css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* Specific styles for Transactions Page if needed */
-        .chart-section {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .account-selector {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-family: 'Inter', sans-serif;
-            cursor: pointer;
-        }
-
-        .account-selector option {
-            background: #1e1e2e;
-            /* Match theme dark color */
-        }
-    </style>
 </head>
 
 <body>
     <div class="app-container">
-        <!-- Sidebar -->
+        <!-- Sidebar placeholder (copied from index) -->
         <aside class="sidebar">
             <div class="logo-container">
-                <img src="/static/images/logo.png" alt="AI Finance Manager Logo" class="logo">
+                <img src="/static/images/logo.png" alt="Logo" class="logo">
                 <span class="brand-name">Money Pilot</span>
             </div>
-
             <nav class="nav-menu">
                 <a href="/dashboard" class="nav-item">
-                    <i class="fa-solid fa-shapes"></i>
+                    <i class="fa-solid fa-house"></i>
                     <span>Dashboard</span>
                 </a>
                 <a href="/transactions" class="nav-item active">
-                    <i class="fa-solid fa-wallet"></i>
+                    <i class="fa-solid fa-list-ul"></i>
                     <span>Transactions</span>
-                </a>
-                <a href="/analytics" class="nav-item">
-                    <i class="fa-solid fa-chart-pie"></i>
-                    <span>Analytics</span>
                 </a>
                 <a href="/budgets" class="nav-item">
                     <i class="fa-solid fa-layer-group"></i>
@@ -75,227 +35,131 @@
                     <span>Settings</span>
                 </a>
             </nav>
-
-            <div class="sidebar-footer">
-                <a href="/login" class="nav-logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Log Out</span>
-                </a>
-            </div>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
+            <!-- Header -->
             <header class="top-bar">
                 <h1 class="page-title">Transactions</h1>
                 <div class="top-bar-actions">
-                    <select id="account-select" class="account-selector">
-                        <option value="">All Accounts</option>
-                        <!-- Populated via JS -->
-                    </select>
-                    <div class="user-profile">
+                    <div class="month-pill"
+                        style="display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e9ecef; border-radius: 20px; padding: 6px 16px; font-size: 1rem; font-weight: 700; color: var(--text-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <button class="month-arrow" id="prev-month"
+                            style="background:none; border:none; cursor:pointer;" onclick="changeMonth(-1)"><i
+                                class="fa-solid fa-chevron-left"></i></button>
+                        <span id="month-label" style="min-width: 120px; text-align: center;">—</span>
+                        <button class="month-arrow" id="next-month"
+                            style="background:none; border:none; cursor:pointer;" onclick="changeMonth(1)"><i
+                                class="fa-solid fa-chevron-right"></i></button>
+                        <button class="btn-secondary" id="all-time-btn" onclick="toggleAllTimeHistory()"
+                            style="padding: 4px 10px; font-size: 0.75rem; border-radius: 12px; margin-left: 8px;">All
+                            Time</button>
+                    </div>
+                    <div class="account-switcher-container" style="position: relative;">
+                        <button class="btn-secondary" id="account-switcher-btn"
+                            style="padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-credit-card"></i> <span id="active-account-name">Select Account</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div id="account-dropdown" class="card"
+                            style="display: none; position: absolute; top: calc(100% + 10px); right: 0; width: 220px; z-index: 1000; padding: 10px;">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <button class="btn-primary" id="add-trans-btn" style="padding: 10px 20px; font-weight: 700;"><i
+                            class="fa-solid fa-plus"></i> Add Transaction</button>
+                    <div class="user-profile" style="display: flex; align-items: center; gap: 12px; cursor: pointer;"
+                        onclick="window.location.href='/settings'">
                         <img src="/static/images/avatar.png" alt="User Avatar" class="avatar">
+                        <a href="/logout" class="logout-link" title="Logout"
+                            style="color: var(--text-gray); font-size: 1.1rem;"><i
+                                class="fa-solid fa-power-off"></i></a>
                     </div>
                 </div>
             </header>
 
-            <div class="chart-section">
-                <h3>Transaction Overview</h3>
-                <canvas id="transactionChart"></canvas>
-            </div>
-
-            <!-- List of transactions could go here too, reusing styles -->
-            <div class="card transactions-card" style="width: 100%;">
-                <div class="card-header">
-                    <h3>History</h3>
+            <!-- Enhanced Transactions Ledger (Selectable by account/month) -->
+            <div class="card" style="min-height: 700px; margin-top: 2rem;">
+                <div class="card-header"
+                    style="padding-bottom: 1.5rem; border-bottom: 1px solid #f1f2f6; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="font-size: 1.2rem; font-weight: 800;">Full Transaction History</h3>
+                        <div class="bs-sub" style="font-size: 0.85rem; margin-top: 4px;">Auditing records by account and
+                            month</div>
+                    </div>
                 </div>
-                <div class="transactions-list" id="full-transactions-list">
-                    <!-- Populated by JS -->
+
+                <div style="padding: 1.5rem;">
+                    <!-- Filter/Search Bar -->
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="flex: 1; position: relative;">
+                            <i class="fa-solid fa-magnifying-glass"
+                                style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #a4b0be;"></i>
+                            <input type="text" id="trans-search-box" placeholder="Search entries..."
+                                style="width: 100%; padding: 12px 12px 12px 45px; border: 1.5px solid #f1f2f6; border-radius: 12px; font-family: 'Inter'; font-size: 0.95rem;">
+                        </div>
+                    </div>
+
+                    <div class="transactions-list" id="transactions-list">
+                        <!-- Full history populated by JS based on month selection -->
+                    </div>
                 </div>
             </div>
-
         </main>
     </div>
 
-    <script>
-        // Inline script for now to handle specific chart logic without polluting script.js too much
-        document.addEventListener('DOMContentLoaded', async () => {
-            let chartInstance = null;
-            let allData = { accounts: [], transactions: [] };
+    <!-- Same modal as index -->
+    <div id="add-transaction-modal" class="modal">
+        <div class="modal-content" style="border-radius: 24px; padding: 2.5rem;">
+            <div class="modal-header">
+                <h2>Log Transaction</h2>
+                <span class="close-modal" id="close-trans-modal">&times;</span>
+            </div>
+            <form id="add-transaction-form" style="margin-top: 1.5rem;">
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" name="title" placeholder="e.g. Amazon Shopping" required
+                        style="padding: 12px; border-radius: 10px; border: 1.5px solid #eee;">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select name="category" required
+                            style="padding: 12px; border-radius: 10px; border: 1.5px solid #eee;">
+                            <option value="Food">Food</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Salary">Salary</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Housing">Housing</option>
+                            <option value="Health">Health</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select name="type" required
+                            style="padding: 12px; border-radius: 10px; border: 1.5px solid #eee;">
+                            <option value="expense">Expense</option>
+                            <option value="income">Income</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" name="amount" placeholder="0.00" step="0.01" required
+                        style="padding: 12px; border-radius: 10px; border: 1.5px solid #eee;">
+                </div>
+                <button type="submit" class="btn-primary"
+                    style="width: 100%; padding: 14px; font-weight: 800; border-radius: 12px; margin-top: 1rem;">Confirm
+                    Transaction</button>
+            </form>
+        </div>
+    </div>
 
-            // Helper: Format Currency
-            const formatCurrency = (amount) => '₹' + parseFloat(amount).toFixed(2);
 
-            // Helper: Format Date
-            const formatDate = (dateString) => {
-                const options = { month: 'short', day: 'numeric', year: 'numeric' };
-                return new Date(dateString).toLocaleDateString('en-US', options);
-            };
-
-            // 1. Fetch Data
-            try {
-                const response = await fetch('/api/data');
-                allData = await response.json();
-
-                initPage();
-            } catch (error) {
-                console.error("Error loading data", error);
-            }
-
-            function initPage() {
-                populateAccountSelect();
-
-                // Check URL params for account_id
-                const urlParams = new URLSearchParams(window.location.search);
-                const accountId = urlParams.get('account_id');
-
-                if (accountId) {
-                    const select = document.getElementById('account-select');
-                    select.value = accountId;
-                }
-
-                renderPage();
-
-                // Listener for select change
-                document.getElementById('account-select').addEventListener('change', renderPage);
-            }
-
-            function populateAccountSelect() {
-                const select = document.getElementById('account-select');
-                allData.accounts.forEach(acc => {
-                    const option = document.createElement('option');
-                    option.value = acc.id;
-                    option.textContent = acc.name;
-                    select.appendChild(option);
-                });
-            }
-
-            function renderPage() {
-                const selectedAccountId = document.getElementById('account-select').value;
-
-                // Filter Transactions
-                let filteredTransactions = allData.transactions;
-                if (selectedAccountId) {
-                    filteredTransactions = filteredTransactions.filter(t => t.account_id === selectedAccountId);
-                }
-
-                // Render List
-                renderTransactionList(filteredTransactions);
-
-                // Render Chart
-                renderChart(filteredTransactions);
-            }
-
-            function renderTransactionList(transactions) {
-                const listEl = document.getElementById('full-transactions-list');
-                listEl.innerHTML = '';
-
-                transactions.forEach(t => {
-                    const isExpense = t.type === 'expense';
-                    const amountClass = isExpense ? 'expense' : 'income';
-                    const arrow = isExpense ? '↘' : '↗';
-
-                    const html = `
-                        <div class="transaction-item">
-                            <div class="transaction-details">
-                                <span class="trans-title">${t.title}</span>
-                                <span class="trans-date">${formatDate(t.date)}</span>
-                            </div>
-                            <span class="trans-amount ${amountClass}">${arrow} ${formatCurrency(t.amount)}</span>
-                        </div>
-                    `;
-                    listEl.innerHTML += html;
-                });
-            }
-
-            function renderChart(transactions) {
-                const ctx = document.getElementById('transactionChart').getContext('2d');
-
-                // Destroy previous chart if exists
-                if (chartInstance) {
-                    chartInstance.destroy();
-                }
-
-                // Process Data: Group by Date
-                // We want a timeline. 
-                // X Axis: Dates (Last 30 days or range of transactions)
-                // Y Axis: Amount
-
-                // Sort transactions by date
-                transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-                // Group by date
-                const dateMap = {};
-                transactions.forEach(t => {
-                    const dateKey = new Date(t.date).toLocaleDateString(); // Simple key
-                    if (!dateMap[dateKey]) {
-                        dateMap[dateKey] = { income: 0, expense: 0 };
-                    }
-                    if (t.type === 'income') {
-                        dateMap[dateKey].income += t.amount;
-                    } else {
-                        dateMap[dateKey].expense += t.amount;
-                    }
-                });
-
-                const labels = Object.keys(dateMap);
-                const incomeData = labels.map(d => dateMap[d].income);
-                const expenseData = labels.map(d => dateMap[d].expense);
-
-                chartInstance = new Chart(ctx, {
-                    type: 'bar', // Using Bar chart as per user image style (grouped bars)
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: 'Income',
-                                data: incomeData,
-                                backgroundColor: '#2ecc71',
-                                borderRadius: 4,
-                                barPercentage: 0.6
-                            },
-                            {
-                                label: 'Expense',
-                                data: expenseData,
-                                backgroundColor: '#ff4d4d',
-                                borderRadius: 4,
-                                barPercentage: 0.6
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                },
-                                ticks: {
-                                    color: '#ccc'
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    color: '#ccc'
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: 'white'
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    </script>
+    <script src="/static/js/script.js"></script>
 </body>
 
 </html>

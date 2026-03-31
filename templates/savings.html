@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savings Goals - Money Pilot</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .goal-card {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .goal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .goal-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .goal-info h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .goal-target {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        .goal-progress-container {
+            flex: 1;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .goal-progress-bar {
+            height: 10px;
+            background: #f1f2f6;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .goal-progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .goal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .goal-days {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .btn-add-goal {
+            margin-top: 1rem;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            padding: 4rem;
+            text-align: center;
+            background: #f9fafe;
+            border: 2px dashed var(--border-color);
+            border-radius: 24px;
+            color: var(--text-gray);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-container" style="justify-content: center; margin-bottom: 2.5rem;">
+                <img src="/static/images/logo.png" alt="Logo" class="logo" style="width: 40px; height: 40px;">
+            </div>
+
+            <nav class="nav-menu">
+                <a href="/dashboard" class="nav-item">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/budgets" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Budgets</span>
+                </a>
+                <a href="/savings" class="nav-item active">
+                    <i class="fa-solid fa-piggy-bank"></i>
+                    <span>Savings Goals</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/login" class="nav-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1 class="page-title">Savings Goals</h1>
+                <div class="top-bar-actions">
+                    <button class="btn-primary" id="add-goal-btn"><i class="fa-solid fa-plus"></i> New Goal</button>
+                    <div class="user-profile" style="display: flex; align-items: center; gap: 12px;">
+                        <img src="/static/images/avatar.png" alt="User Avatar" class="avatar">
+                        <a href="/logout" class="logout-link" title="Logout"
+                            style="color: var(--text-gray); font-size: 1.1rem; transition: color 0.2s;"><i
+                                class="fa-solid fa-power-off"></i></a>
+                    </div>
+                </div>
+            </header>
+
+            <div class="goals-grid" id="goals-grid">
+                <!-- Goals will be populated here -->
+                <div class="empty-state">
+                    <i class="fa-solid fa-bullseye"></i>
+                    <h3>No Savings Goals Yet</h3>
+                    <p>Start tracking your financial milestones today.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Goal Modal -->
+    <div id="add-goal-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Savings Goal</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="add-goal-form">
+                <div class="form-group">
+                    <label for="goal-name">Goal Name</label>
+                    <input type="text" id="goal-name" placeholder="e.g. Dream Vacation" required>
+                </div>
+                <div class="form-group">
+                    <label for="goal-target">Target Amount (₹)</label>
+                    <input type="number" id="goal-target" placeholder="50,000" required>
+                </div>
+                <div class="form-group">
+                    <label for="goal-current">Current Savings (₹)</label>
+                    <input type="number" id="goal-current" placeholder="5,000" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="goal-icon">Icon</label>
+                    <select id="goal-icon">
+                        <option value="fa-plane">Vacation</option>
+                        <option value="fa-car">Car</option>
+                        <option value="fa-house">Home</option>
+                        <option value="fa-laptop">Gadgets</option>
+                        <option value="fa-graduation-cap">Education</option>
+                        <option value="fa-heart">Wedding</option>
+                        <option value="fa-briefcase">Emergency Fund</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">Create Goal</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/script.js"></script>
+    <script>
+        // Specific JS for Savings Goals if needed, or add to script.js
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadSavingsGoals === 'function') {
+                loadSavingsGoals();
+            }
+        });
+    </script>
+</body>
+
+</html>

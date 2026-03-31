@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Finance Manager - Transactions</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Specific styles for Transactions Page if needed */
+        .chart-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .account-selector {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+        }
+
+        .account-selector option {
+            background: #1e1e2e;
+            /* Match theme dark color */
+        }
+
+        /* Filter Controls Styles */
+        .filter-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            padding: 20px;
+            background: #fafbfc;
+            border-radius: 12px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #2d3436;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .search-input,
+        .filter-select {
+            padding: 10px 12px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            color: #2d3436;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        .filter-btn-reset {
+            padding: 10px 16px;
+            background: #f1f2f6;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #636e72;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            align-self: flex-end;
+        }
+
+        .filter-btn-reset:hover {
+            background: #e9ecef;
+            border-color: #6c5ce7;
+            color: #6c5ce7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="/static/images/logo.png" alt="AI Finance Manager Logo" class="logo">
+                <span class="brand-name">Money Pilot</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="/dashboard" class="nav-item">
+                    <i class="fa-solid fa-shapes"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/transactions" class="nav-item active">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="/analytics" class="nav-item">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="/budgets" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Budgets</span>
+                </a>
+                <a href="/settings" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/login" class="nav-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1 class="page-title">Transactions</h1>
+                <div class="top-bar-actions">
+                    <select id="account-select" class="account-selector">
+                        <option value="">All Accounts</option>
+                        <!-- Populated via JS -->
+                    </select>
+                    <div class="user-profile">
+                        <img src="/static/images/avatar.png" alt="User Avatar" class="avatar">
+                    </div>
+                </div>
+            </header>
+
+            <div class="chart-section">
+                <h3>Transaction Overview</h3>
+                <canvas id="transactionChart"></canvas>
+            </div>
+
+            <!-- Filter & Search Section -->
+            <div class="card transactions-card" style="width: 100%; margin-bottom: 24px;">
+                <div class="card-header">
+                    <h3>Filter Transactions</h3>
+                </div>
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label for="search-input">Search</label>
+                        <input type="text" id="search-input" placeholder="Search by title or category..." class="search-input">
+                    </div>
+                    <div class="filter-group">
+                        <label for="type-filter">Type</label>
+                        <select id="type-filter" class="filter-select">
+                            <option value="">All Types</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="category-filter">Category</label>
+                        <select id="category-filter" class="filter-select">
+                            <option value="">All Categories</option>
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="month-filter">Month</label>
+                        <select id="month-filter" class="filter-select">
+                            <option value="">All Months</option>
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                    <button id="reset-filters" class="filter-btn-reset"><i class="fa-solid fa-xmark"></i> Clear Filters</button>
+                </div>
+            </div>
+
+            <!-- List of transactions could go here too, reusing styles -->
+            <div class="card transactions-card" style="width: 100%;">
+                <div class="card-header">
+                    <h3>Transaction History</h3>
+                    <span id="transaction-count" style="color: #636e72; font-size: 0.9rem;"></span>
+                </div>
+                <div class="transactions-list" id="full-transactions-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Inline script for now to handle specific chart logic without polluting script.js too much
+        document.addEventListener('DOMContentLoaded', async () => {
+            let chartInstance = null;
+            let allData = { accounts: [], transactions: [] };
+
+            // Helper: Format Currency
+            const formatCurrency = (amount) => '₹' + parseFloat(amount).toFixed(2);
+
+            // Helper: Format Date
+            const formatDate = (dateString) => {
+                const options = { month: 'short', day: 'numeric', year: 'numeric' };
+                return new Date(dateString).toLocaleDateString('en-US', options);
+            };
+
+            // 1. Fetch Data
+            try {
+                const response = await fetch('/api/data');
+                allData = await response.json();
+
+                initPage();
+            } catch (error) {
+                console.error("Error loading data", error);
+            }
+
+            function initPage() {
+                populateAccountSelect();
+                populateFilterOptions();
+
+                // Check URL params for account_id
+                const urlParams = new URLSearchParams(window.location.search);
+                const accountId = urlParams.get('account_id');
+
+                if (accountId) {
+                    const select = document.getElementById('account-select');
+                    select.value = accountId;
+                }
+
+                renderPage();
+
+                // Listeners for all filter changes
+                document.getElementById('account-select').addEventListener('change', renderPage);
+                document.getElementById('search-input').addEventListener('input', renderPage);
+                document.getElementById('type-filter').addEventListener('change', renderPage);
+                document.getElementById('category-filter').addEventListener('change', renderPage);
+                document.getElementById('month-filter').addEventListener('change', renderPage);
+                document.getElementById('reset-filters').addEventListener('click', resetFilters);
+            }
+
+            function populateAccountSelect() {
+                const select = document.getElementById('account-select');
+                allData.accounts.forEach(acc => {
+                    const option = document.createElement('option');
+                    option.value = acc.id;
+                    option.textContent = acc.name;
+                    select.appendChild(option);
+                });
+            }
+
+            function populateFilterOptions() {
+                // Populate Category filter
+                const categories = new Set();
+                allData.transactions.forEach(t => {
+                    if (t.category) categories.add(t.category);
+                });
+
+                const categorySelect = document.getElementById('category-filter');
+                Array.from(categories).sort().forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    categorySelect.appendChild(option);
+                });
+
+                // Populate Month filter
+                const months = new Set();
+                allData.transactions.forEach(t => {
+                    if (t.date) {
+                        const month = t.date.substring(0, 7); // YYYY-MM
+                        months.add(month);
+                    }
+                });
+
+                const monthSelect = document.getElementById('month-filter');
+                Array.from(months).sort().reverse().forEach(month => {
+                    const option = document.createElement('option');
+                    option.value = month;
+                    const [year, m] = month.split('-');
+                    const monthName = new Date(year, m - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                    option.textContent = monthName;
+                    monthSelect.appendChild(option);
+                });
+            }
+
+            function resetFilters() {
+                document.getElementById('search-input').value = '';
+                document.getElementById('type-filter').value = '';
+                document.getElementById('category-filter').value = '';
+                document.getElementById('month-filter').value = '';
+                renderPage();
+            }
+
+            function renderPage() {
+                const selectedAccountId = document.getElementById('account-select').value;
+                const searchTerm = document.getElementById('search-input').value.toLowerCase();
+                const typeFilter = document.getElementById('type-filter').value;
+                const categoryFilter = document.getElementById('category-filter').value;
+                const monthFilter = document.getElementById('month-filter').value;
+
+                // Filter Transactions
+                let filteredTransactions = allData.transactions;
+                
+                if (selectedAccountId) {
+                    filteredTransactions = filteredTransactions.filter(t => t.account_id === selectedAccountId);
+                }
+
+                if (searchTerm) {
+                    filteredTransactions = filteredTransactions.filter(t => 
+                        (t.title && t.title.toLowerCase().includes(searchTerm)) ||
+                        (t.category && t.category.toLowerCase().includes(searchTerm))
+                    );
+                }
+
+                if (typeFilter) {
+                    filteredTransactions = filteredTransactions.filter(t => t.type === typeFilter);
+                }
+
+                if (categoryFilter) {
+                    filteredTransactions = filteredTransactions.filter(t => t.category === categoryFilter);
+                }
+
+                if (monthFilter) {
+                    filteredTransactions = filteredTransactions.filter(t => 
+                        t.date && t.date.substring(0, 7) === monthFilter
+                    );
+                }
+
+                // Render List
+                renderTransactionList(filteredTransactions);
+
+                // Render Chart
+                renderChart(filteredTransactions);
+
+                // Update transaction count
+                document.getElementById('transaction-count').textContent = 
+                    `(${filteredTransactions.length} ${filteredTransactions.length === 1 ? 'transaction' : 'transactions'})`;
+            }
+
+            function renderTransactionList(transactions) {
+                const listEl = document.getElementById('full-transactions-list');
+                listEl.innerHTML = '';
+
+                transactions.forEach(t => {
+                    const isExpense = t.type === 'expense';
+                    const amountClass = isExpense ? 'expense' : 'income';
+                    const arrow = isExpense ? '↘' : '↗';
+
+                    const html = `
+                        <div class="transaction-item">
+                            <div class="transaction-details">
+                                <span class="trans-title">${t.title}</span>
+                                <span class="trans-date">${formatDate(t.date)}</span>
+                            </div>
+                            <span class="trans-amount ${amountClass}">${arrow} ${formatCurrency(t.amount)}</span>
+                        </div>
+                    `;
+                    listEl.innerHTML += html;
+                });
+            }
+
+            function renderChart(transactions) {
+                const ctx = document.getElementById('transactionChart').getContext('2d');
+
+                // Destroy previous chart if exists
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                // Process Data: Group by Date
+                // We want a timeline. 
+                // X Axis: Dates (Last 30 days or range of transactions)
+                // Y Axis: Amount
+
+                // Sort transactions by date
+                transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                // Group by date
+                const dateMap = {};
+                transactions.forEach(t => {
+                    const dateKey = new Date(t.date).toLocaleDateString(); // Simple key
+                    if (!dateMap[dateKey]) {
+                        dateMap[dateKey] = { income: 0, expense: 0 };
+                    }
+                    if (t.type === 'income') {
+                        dateMap[dateKey].income += t.amount;
+                    } else {
+                        dateMap[dateKey].expense += t.amount;
+                    }
+                });
+
+                const labels = Object.keys(dateMap);
+                const incomeData = labels.map(d => dateMap[d].income);
+                const expenseData = labels.map(d => dateMap[d].expense);
+
+                chartInstance = new Chart(ctx, {
+                    type: 'bar', // Using Bar chart as per user image style (grouped bars)
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Income',
+                                data: incomeData,
+                                backgroundColor: '#2ecc71',
+                                borderRadius: 4,
+                                barPercentage: 0.6
+                            },
+                            {
+                                label: 'Expense',
+                                data: expenseData,
+                                backgroundColor: '#ff4d4d',
+                                borderRadius: 4,
+                                barPercentage: 0.6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#ccc'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#ccc'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'white'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

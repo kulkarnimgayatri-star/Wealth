@@ -1,19 +1,27 @@
 :root {
     --primary-color: #6c5ce7;
-    /* Purple */
+    /* Premium Deep Lavender */
+    --primary-gradient: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
     --text-dark: #2d3436;
-    --text-gray: #636e72;
-    --bg-light: #f9fafe;
+    --text-gray: #a4b0be;
+    --bg-light: #f4f6f9;
     --white: #ffffff;
-    --border-color: #dfe6e9;
+    --border-color: rgba(0, 0, 0, 0.04);
     --income-color: #00b894;
-    --expense-color: #d63031;
+    /* Vivid Mint */
+    --expense-color: #ff7675;
+    /* Vivid Coral */
+
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --glass-blur: blur(20px);
 
     /* Chart Colors */
     --chart-red: #ff7675;
     --chart-blue: #74b9ff;
-    --chart-green: #55efc4;
+    --chart-green: #00b894;
     --chart-purple: #a29bfe;
+
+    --card-shadow: 0 10px 40px rgba(108, 92, 231, 0.08);
 }
 
 * {
@@ -24,8 +32,13 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--white);
     color: var(--text-dark);
+    background-color: #f4f6f9;
+    background-image:
+        radial-gradient(at 0% 0%, rgba(108, 92, 231, 0.12) 0, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(0, 184, 148, 0.12) 0, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(253, 203, 110, 0.12) 0, transparent 50%);
+    background-attachment: fixed;
 }
 
 .app-container {
@@ -35,19 +48,26 @@ body {
 
 /* Sidebar */
 .sidebar {
-    width: 250px;
+    width: 220px;
+    /* Slimmer sidebar */
+    height: 100vh;
     background-color: var(--white);
     border-right: 1px solid var(--border-color);
-    padding: 2rem;
+    padding: 1.5rem;
+    /* Reduced padding */
     display: flex;
     flex-direction: column;
+    position: sticky;
+    top: 0;
+    flex-shrink: 0;
 }
 
 .logo-container {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 3rem;
+    gap: 8px;
+    margin-bottom: 2rem;
+    /* reduced margin */
 }
 
 .logo {
@@ -66,8 +86,25 @@ body {
 .nav-menu {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1.5rem;
     flex: 1;
+}
+
+.nav-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.nav-section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0 16px;
+    margin-bottom: 0.5rem;
+    opacity: 0.7;
 }
 
 .nav-item {
@@ -84,7 +121,8 @@ body {
 
 .nav-item:hover,
 .nav-item.active {
-    background-color: #f1f2f6;
+    background-color: rgba(162, 155, 254, 0.08);
+    /* Lighter hover */
     color: var(--primary-color);
 }
 
@@ -112,7 +150,8 @@ body {
 .main-content {
     flex: 1;
     padding: 2rem 3rem;
-    background-color: var(--white);
+    background-color: transparent;
+    /* Changed to let gradients shine */
 }
 
 /* Header */
@@ -124,10 +163,11 @@ body {
 }
 
 .page-title {
-    font-size: 3rem;
-    font-weight: 800;
-    color: var(--primary-color);
-    letter-spacing: -0.05rem;
+    font-size: 2.25rem;
+    /* Slightly smaller, more elegant */
+    font-weight: 700;
+    color: var(--text-dark);
+    letter-spacing: -0.02rem;
 }
 
 .top-bar-actions {
@@ -175,18 +215,24 @@ body {
 /* Dashboard Grid */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    /* Two main columns for bottom row */
-    gap: 2rem;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
 }
 
 /* Cards */
 .card {
-    background-color: var(--white);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    background-color: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 24px;
+    padding: 1.8rem;
+    box-shadow: var(--card-shadow);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(162, 155, 254, 0.06);
 }
 
 .card-header {
@@ -205,44 +251,197 @@ body {
 /* Budget Card specific - spans full width */
 .budget-card {
     grid-column: 1 / -1;
+    overflow: hidden;
 }
 
-.budget-info {
-    margin-bottom: 1rem;
+#budget-percent {
     font-size: 1.1rem;
+    /* Increase month display size */
+    font-weight: 500;
 }
 
 .amount-spent {
+    font-size: 2.2rem;
+    /* Larger display */
+    font-weight: 800;
+}
+
+/* Summary Cards */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.summary-card {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.25rem;
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.card-icon.blue {
+    background: rgba(116, 185, 255, 0.15);
+    color: #0984e3;
+}
+
+.card-icon.green {
+    background: rgba(85, 239, 196, 0.15);
+    color: #00b894;
+}
+
+.card-icon.red {
+    background: rgba(255, 118, 117, 0.15);
+    color: #d63031;
+}
+
+.card-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-label {
+    font-size: 0.75rem;
     font-weight: 700;
+    color: var(--text-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.card-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.budget-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2rem;
+    gap: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.budget-stat-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.budget-stat-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.amount-spent {
+    font-size: 2.5rem;
+    font-weight: 800;
     color: var(--text-dark);
 }
 
 .amount-total {
+    font-size: 1.2rem;
+    font-weight: 600;
     color: var(--text-gray);
+}
+
+
+.progress-info {
+    margin-bottom: 1.25rem;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+#budget-percent-val {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.status-good {
+    background-color: rgba(0, 184, 148, 0.12);
+    color: #00b894;
+}
+
+.status-warning {
+    background-color: rgba(253, 203, 110, 0.2);
+    color: #e67e22;
+}
+
+.status-danger {
+    background-color: rgba(214, 48, 49, 0.12);
+    color: #d63031;
 }
 
 .progress-container {
     width: 100%;
-    height: 12px;
-    background-color: #dfe6e9;
-    /* Light gray track */
-    border-radius: 10px;
+    height: 16px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 50px;
     overflow: hidden;
-    margin-bottom: 0.5rem;
+    margin: 1.5rem 0;
 }
 
 .progress-bar {
     height: 100%;
-    background-color: #2d3436;
-    /* Black/Dark gray progress */
+    background: var(--primary-gradient);
+    border-radius: 50px;
+    box-shadow: 0 0 15px rgba(108, 92, 231, 0.3);
+    transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .budget-footer-text {
     width: 100%;
-    text-align: right;
-    font-size: 0.8rem;
+    text-align: left;
+    font-size: 0.95rem;
+    /* Increased size */
     color: var(--text-gray);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1rem;
+    /* Better spacing */
 }
+
+.highlight-month {
+    font-weight: 800;
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    /* Make it very prominent */
+    display: inline-block;
+    padding-left: 10px;
+}
+
 
 /* Transaction Card */
 /* Transaction Card Container */
@@ -301,72 +500,53 @@ body {
 /* Expense Chart Card */
 /* Expense Chart Card Container */
 
-.chart-container {
-    position: relative;
-    height: 250px;
+/* Horizontal Money Flow Graph */
+.horizontal-graph-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1rem;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 10px 0;
 }
 
-/* Simple CSS Pie Chart using Conic Gradient */
-.pie-chart {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: conic-gradient(#ff7675 0% 35%,
-            /* Rental */
-            #55efc4 35% 50%,
-            /* Travel or Ent */
-            #74b9ff 50% 75%,
-            /* Shopping */
-            #ff7675 75% 100%
-            /* Simplified gradient for demo, matching approx visual weights */
-        );
-    background: conic-gradient(#ff6b6b 0deg 120deg,
-            /* Red */
-            #9be8b8 120deg 210deg,
-            /* Light Green */
-            #5dade2 210deg 280deg,
-            /* Blue */
-            #4dcfe0 280deg 360deg
-            /* Cyan */
-        );
-    position: relative;
+.graph-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.chart-labels {
-    position: absolute;
+.graph-item-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.graph-bar-container {
+    height: 12px;
+    background-color: #f1f2f6;
+    border-radius: 6px;
+    overflow: hidden;
     width: 100%;
+}
+
+.graph-bar {
     height: 100%;
-    top: 0;
-    left: 0;
-    pointer-events: none;
+    border-radius: 6px;
+    transition: width 0.8s ease;
 }
 
-.label-item {
-    position: absolute;
-    font-size: 0.8rem;
-    font-weight: 500;
-    white-space: nowrap;
+.graph-bar.income-bar {
+    background-color: var(--income-color);
 }
 
-.chart-legend {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-top: 1rem;
+.graph-bar.expense-bar {
+    background-color: var(--expense-color);
 }
 
-.legend-item {
-    font-size: 0.85rem;
-    color: var(--text-gray);
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.graph-card {
+    min-height: 300px;
 }
+
 
 
 /* Accounts Section */
@@ -391,65 +571,79 @@ body {
 }
 
 .account-card {
-    background: var(--white);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 1.5rem;
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 24px;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 180px;
+    height: 200px;
     position: relative;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .account-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
+    transform: scale(1.03) translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+}
+
+.account-card.active {
+    background: var(--primary-gradient);
+    border: none;
+    box-shadow: 0 15px 30px rgba(108, 92, 231, 0.25);
+}
+
+.account-card.active .account-name,
+.account-card.active .account-balance,
+.account-card.active .account-type,
+.account-card.active .account-action {
+    color: white !important;
 }
 
 .account-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .account-name {
-    font-weight: 600;
-    font-size: 1rem;
+    font-weight: 700;
+    font-size: 1.1rem;
     color: var(--text-dark);
 }
 
 .toggle-switch {
-    width: 40px;
-    height: 22px;
-    background-color: #e0e0e0;
-    border-radius: 20px;
+    width: 44px;
+    height: 24px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 50px;
     position: relative;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
 }
 
 .toggle-switch::after {
     content: '';
     position: absolute;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     background-color: white;
     border-radius: 50%;
     top: 2px;
     left: 2px;
-    transition: transform 0.3s;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .toggle-switch.active {
-    background-color: var(--text-dark);
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
 .toggle-switch.active::after {
-    transform: translateX(18px);
+    transform: translateX(20px);
 }
 
 .account-balance {
