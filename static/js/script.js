@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const avatars = document.querySelectorAll('.avatar');
         const name = localStorage.getItem('user_name') || "Gayatri K";
         const imgUrl = localStorage.getItem('user_avatar') || "";
-        
+
         avatars.forEach(avatarEl => {
             if (imgUrl && imgUrl.trim() !== '') {
                 avatarEl.src = imgUrl;
@@ -97,12 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const formData = new FormData(addTransForm);
-            
+
             const title = formData.get('title')?.trim();
             const category = formData.get('category');
             const amount = parseFloat(formData.get('amount'));
             const type = formData.get('type');
-            
+
             // Validation
             if (!title) {
                 alert("❌ Please enter a transaction title");
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 const responseData = await response.json();
-                
+
                 if (response.ok) {
                     transModal.classList.remove("show");
                     addTransForm.reset();
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isAllTime = false; // Navigating months breaks "All Time"
         const btn = document.getElementById('all-time-btn');
         if (btn) { btn.style.background = ''; btn.style.color = ''; }
-        
+
         viewMonth += delta;
         if (viewMonth < 0) { viewMonth = 11; viewYear--; }
         if (viewMonth > 11) { viewMonth = 0; viewYear++; }
@@ -288,12 +288,12 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTransactions();
         renderSavingsGoals();
         renderSummaryCards();
-        renderHorizontalGraph(); 
+        renderHorizontalGraph();
         renderAnalyticsChart();
     }
 
-    function renderFinancialHealth() {}
-    function renderPieChart() {}
+    function renderFinancialHealth() { }
+    function renderPieChart() { }
 
     function renderAccounts() {
         if (!accountsGridEl) return;
@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
             accCard.style.flexDirection = 'column';
             accCard.style.gap = '8px';
             accCard.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-            
+
             accCard.onclick = (e) => toggleAccount(acc.id, e);
 
             accCard.innerHTML = `
@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- KPI Update ---
         const totalInc = incomeData.reduce((a, b) => a + b, 0);
         const totalExp = expenseData.reduce((a, b) => a + b, 0);
-        
+
         const kpiSavings = document.getElementById('kpi-savings');
         if (kpiSavings) kpiSavings.textContent = formatCurrency((totalInc - totalExp) / 3);
 
@@ -454,21 +454,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const categoryBudgets = appData.category_budgets || {};
         const transactions = appData.transactions || [];
-        
+
         const currentMonthDisplay = viewYear + '-' + String(viewMonth + 1).padStart(2, '0');
-        
+
         let totalBudget = 0;
         let totalSpent = 0;
 
         const activeAccount = appData.accounts.find(a => a.active);
-        
+
         for (const [category, limit] of Object.entries(categoryBudgets)) {
             totalBudget += limit;
             const categoryExpenses = transactions.filter(t => {
                 const tCat = t.category ? t.category.toLowerCase() : '';
                 const searchCat = category.toLowerCase();
                 if (tCat !== searchCat || t.type !== 'expense') return false;
-                
+
                 // Filter by active account if one is selected
                 if (activeAccount && t.account_id !== activeAccount.id) return false;
 
@@ -481,7 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const dateForDisplay = new Date(viewYear, viewMonth, 1);
-        const monthName = dateForDisplay.toLocaleDateString('en-US', {month:'long'});
+        const monthName = dateForDisplay.toLocaleDateString('en-US', { month: 'long' });
 
         if (totalBudget === 0) {
             budgetSpentEl.textContent = formatCurrency(0);
@@ -499,13 +499,13 @@ document.addEventListener('DOMContentLoaded', () => {
         budgetSpentEl.style.color = percent < 80 ? '#00b894' : percent <= 100 ? '#e67e22' : '#d63031';
         budgetTotalEl.textContent = `${formatCurrency(totalBudget)}`;
         budgetProgressBar.style.width = `${displayPercent}%`;
-        
+
         const percentValEl = document.getElementById('budget-percent-val');
         if (percentValEl) percentValEl.textContent = `${displayPercent}%`;
 
         const statusTextEl = document.getElementById('budget-status-text');
         if (statusTextEl) {
-            statusTextEl.className = 'status-badge'; 
+            statusTextEl.className = 'status-badge';
             if (percent < 80) {
                 statusTextEl.textContent = 'Under Budget';
                 statusTextEl.classList.add('status-good');
@@ -536,7 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (activeAccount) {
             transactions = transactions.filter(t => t.account_id === activeAccount.id);
         }
-        
+
         // Filter by month ONLY if we are NOT on the history page (Dashboard view)
         const isHistoryPage = window.location.pathname.includes('transactions');
         if (!isHistoryPage) {
@@ -565,8 +565,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Search Filter
         const query = searchBox ? searchBox.value.toLowerCase() : '';
         if (query) {
-            transactions = transactions.filter(t => 
-                t.title.toLowerCase().includes(query) || 
+            transactions = transactions.filter(t =>
+                t.title.toLowerCase().includes(query) ||
                 t.category.toLowerCase().includes(query)
             );
         }
@@ -576,7 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const displayList = isHistoryPage ? transactions : transactions.slice(0, 5); 
+        const displayList = isHistoryPage ? transactions : transactions.slice(0, 5);
 
         displayList.forEach(t => {
             const isExpense = t.type === 'expense';
@@ -622,7 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
         goalsGrid.innerHTML = goals.map((goal, index) => {
             const percent = Math.min((goal.current / goal.target) * 100, 100);
             const palette = colorPalettes[index % colorPalettes.length];
-            
+
             return `
                 <div class="goal-card">
                     <div class="goal-header">
@@ -669,7 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         graphContainer.innerHTML = '';
-        const entries = Object.entries(categoryTotals).sort((a,b) => b[1] - a[1]);
+        const entries = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
 
         if (entries.length === 0) {
             graphContainer.innerHTML = '<p style="text-align:center; padding:20px; color:#aaa;">No expenses to show for this period.</p>';
@@ -702,7 +702,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeAccount = appData.accounts.find(a => a.active);
         let targetBalance = activeAccount ? activeAccount.balance : appData.accounts.reduce((sum, acc) => sum + acc.balance, 0);
         let balanceLabel = activeAccount ? activeAccount.name + " Balance" : "Total Balance";
-        
+
         let monthlyIncome = 0;
         let monthlyExpense = 0;
 
@@ -710,7 +710,7 @@ document.addEventListener('DOMContentLoaded', () => {
         appData.transactions.forEach(t => {
             if (t.date && t.date.startsWith(currentMonth)) {
                 if (activeAccount && t.account_id !== activeAccount.id) return;
-                
+
                 if (t.type === 'income') monthlyIncome += t.amount;
                 else monthlyExpense += t.amount;
             }
@@ -791,7 +791,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (existingToast) {
             existingToast.remove();
         }
-        
+
         const toast = document.createElement('div');
         toast.id = 'success-toast';
         toast.style.cssText = `
@@ -810,7 +810,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         toast.textContent = message;
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.style.animation = 'slideOut 0.3s ease-in-out';
             setTimeout(() => toast.remove(), 300);
@@ -929,12 +929,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Optimistic UI Update
         const targetAccount = appData.accounts.find(a => a.id === id);
-        if (!targetAccount) return; 
+        if (!targetAccount) return;
 
         // Always show success even if clicking the active one to confirm "selection"
         showSuccessMessage(`Switched to ${targetAccount.name}`);
-        
-        if (targetAccount.active) return; 
+
+        if (targetAccount.active) return;
 
         // Update local state
         appData.accounts.forEach(acc => {
